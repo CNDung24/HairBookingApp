@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert, Modal, TextInput, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert, Modal, TextInput, ScrollView, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import client from '../../api/client';
 import { COLORS, SPACING, RADIUS } from '../../theme';
@@ -92,54 +92,78 @@ export const ManageBookingsScreen = () => {
         const statusLabel = STATUS_LABELS[item.status] || item.status;
 
         return (
-            <TouchableOpacity style={styles.bookingCard} onPress={() => handleViewDetail(item)}>
-                <View style={styles.bookingHeader}>
-                    <View style={styles.bookingInfo}>
-                        <Text style={styles.bookingId}>#{item.id}</Text>
-                        <Text style={styles.shopName}>{item.Shop?.name || 'Shop'}</Text>
+            <TouchableOpacity 
+                style={styles.bookingCard} 
+                onPress={() => handleViewDetail(item)}
+                activeOpacity={0.8}
+            >
+                <View style={styles.cardHeader}>
+                    <View style={styles.shopSection}>
+                        <View style={[styles.shopIcon, { backgroundColor: COLORS.primary + '15' }]}>
+                            <Ionicons name="business" size={18} color={COLORS.primary} />
+                        </View>
+                        <View>
+                            <Text style={styles.shopName}>{item.Shop?.name || 'Cửa hàng'}</Text>
+                            <Text style={styles.bookingId}>Mã đơn: #{item.id}</Text>
+                        </View>
                     </View>
-                    <View style={[styles.statusBadge, { backgroundColor: statusColor }]}>
-                        <Text style={styles.statusText}>{statusLabel}</Text>
+                    <View style={[styles.statusBadge, { backgroundColor: statusColor + '20' }]}>
+                        <View style={[styles.statusDot, { backgroundColor: statusColor }]} />
+                        <Text style={[styles.statusText, { color: statusColor }]}>{statusLabel}</Text>
                     </View>
                 </View>
 
-                <View style={styles.bookingDetails}>
-                    <View style={styles.detailRow}>
-                        <Ionicons name="person-outline" size={14} color={COLORS.textLight} />
-                        <Text style={styles.detailText}>{item.User?.name || 'Khách hàng'}</Text>
+                <View style={styles.divider} />
+
+                <View style={styles.cardBody}>
+                    <View style={styles.infoRow}>
+                        <Ionicons name="person-outline" size={16} color={COLORS.textLight} />
+                        <Text style={styles.infoLabel}>Khách hàng:</Text>
+                        <Text style={styles.infoValue}>{item.User?.name || 'Khách vãng lai'}</Text>
                     </View>
-                    <View style={styles.detailRow}>
-                        <Ionicons name="cut-outline" size={14} color={COLORS.textLight} />
-                        <Text style={styles.detailText}>{item.Service?.name || 'Dịch vụ'}</Text>
+                    <View style={styles.infoRow}>
+                        <Ionicons name="cut-outline" size={16} color={COLORS.textLight} />
+                        <Text style={styles.infoLabel}>Dịch vụ:</Text>
+                        <Text style={styles.infoValue}>{item.Service?.name || 'Dịch vụ'}</Text>
                     </View>
-                    <View style={styles.detailRow}>
-                        <Ionicons name="person-outline" size={14} color={COLORS.textLight} />
-                        <Text style={styles.detailText}>{item.Barber?.name || 'Chưa chọn thợ'}</Text>
+                    <View style={styles.infoRow}>
+                        <View style={styles.dateTimeRow}>
+                            <View style={styles.dateTimeItem}>
+                                <Ionicons name="calendar-outline" size={16} color={COLORS.textLight} />
+                                <Text style={styles.infoValue}>
+                                    {item.booking_date ? new Date(item.booking_date).toLocaleDateString('vi-VN') : ''}
+                                </Text>
+                            </View>
+                            <View style={styles.dateTimeItem}>
+                                <Ionicons name="time-outline" size={16} color={COLORS.textLight} />
+                                <Text style={styles.infoValue}>{item.booking_time}</Text>
+                            </View>
+                        </View>
                     </View>
-                    <View style={styles.detailRow}>
-                        <Ionicons name="calendar-outline" size={14} color={COLORS.textLight} />
-                        <Text style={styles.detailText}>
-                            {item.booking_date ? new Date(item.booking_date).toLocaleDateString('vi-VN') : ''} - {item.booking_time}
-                        </Text>
-                    </View>
-                    <View style={styles.detailRow}>
-                        <Ionicons name="cash-outline" size={14} color={COLORS.textLight} />
-                        <Text style={styles.detailText}>
+                </View>
+
+                <View style={styles.cardFooter}>
+                    <View style={styles.priceSection}>
+                        <Text style={styles.priceLabel}>Thanh toán</Text>
+                        <Text style={styles.priceValue}>
                             {item.actual_price ? `${item.actual_price.toLocaleString()}đ` : `${item.original_price?.toLocaleString() || 0}đ`}
                         </Text>
                     </View>
-                </View>
-
-                <View style={styles.bookingActions}>
-                    {getStatusActions(item).map((action) => (
-                        <TouchableOpacity
-                            key={action.status}
-                            style={[styles.actionButton, { backgroundColor: action.color }]}
-                            onPress={() => handleUpdateStatus(item, action.status)}
-                        >
-                            <Text style={styles.actionButtonText}>{action.label}</Text>
+                    
+                    <View style={styles.actionGroup}>
+                        {getStatusActions(item).slice(0, 1).map((action) => (
+                            <TouchableOpacity
+                                key={action.status}
+                                style={[styles.miniButton, { backgroundColor: action.color }]}
+                                onPress={() => handleUpdateStatus(item, action.status)}
+                            >
+                                <Text style={styles.miniButtonText}>{action.label}</Text>
+                            </TouchableOpacity>
+                        ))}
+                        <TouchableOpacity style={styles.detailBtn} onPress={() => handleViewDetail(item)}>
+                            <Ionicons name="chevron-forward" size={18} color={COLORS.textLight} />
                         </TouchableOpacity>
-                    ))}
+                    </View>
                 </View>
             </TouchableOpacity>
         );
@@ -176,64 +200,134 @@ export const ManageBookingsScreen = () => {
                 }
             />
 
-            <Modal visible={showDetailModal} animationType="slide">
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Chi tiết lịch hẹn</Text>
-                        <TouchableOpacity onPress={() => setShowDetailModal(false)}>
-                            <Ionicons name="close" size={24} color={COLORS.text} />
-                        </TouchableOpacity>
-                    </View>
-                    {selectedBooking && (
-                        <ScrollView style={styles.modalBody}>
-                            <View style={styles.detailSection}>
-                                <Text style={styles.sectionTitle}>Thông tin khách hàng</Text>
-                                <Text style={styles.detailLabel}>Tên: {selectedBooking.User?.name}</Text>
-                                <Text style={styles.detailLabel}>Email: {selectedBooking.User?.email}</Text>
-                                <Text style={styles.detailLabel}>SĐT: {selectedBooking.User?.phone}</Text>
+            <Modal visible={showDetailModal} animationType="fade" transparent statusBarTranslucent>
+                <View style={styles.modalOverlay}>
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalHeader}>
+                            <View>
+                                <Text style={styles.modalTitle}>Chi tiết lịch hẹn</Text>
+                                <Text style={styles.modalSubtitle}>Mã đơn hàng: #{selectedBooking?.id}</Text>
                             </View>
-
-                            <View style={styles.detailSection}>
-                                <Text style={styles.sectionTitle}>Thông tin lịch hẹn</Text>
-                                <Text style={styles.detailLabel}>Mã: #{selectedBooking.id}</Text>
-                                <Text style={styles.detailLabel}>Cửa hàng: {selectedBooking.Shop?.name}</Text>
-                                <Text style={styles.detailLabel}>Dịch vụ: {selectedBooking.Service?.name}</Text>
-                                <Text style={styles.detailLabel}>Thợ: {selectedBooking.Barber?.name || 'Chưa chọn'}</Text>
-                                <Text style={styles.detailLabel}>Ngày: {selectedBooking.booking_date ? new Date(selectedBooking.booking_date).toLocaleDateString('vi-VN') : ''}</Text>
-                                <Text style={styles.detailLabel}>Giờ: {selectedBooking.booking_time}</Text>
-                            </View>
-
-                            <View style={styles.detailSection}>
-                                <Text style={styles.sectionTitle}>Thanh toán</Text>
-                                <Text style={styles.detailLabel}>Giá gốc: {selectedBooking.original_price?.toLocaleString() || 0}đ</Text>
-                                <Text style={styles.detailLabel}>Giá thực: {selectedBooking.actual_price?.toLocaleString() || 0}đ</Text>
-                                <Text style={styles.detailLabel}>Phương thức: {selectedBooking.paymentMethod || 'Tiền mặt'}</Text>
-                                <Text style={styles.detailLabel}>Trạng thái: {STATUS_LABELS[selectedBooking.status]}</Text>
-                            </View>
-
-                            {selectedBooking.note && (
-                                <View style={styles.detailSection}>
-                                    <Text style={styles.sectionTitle}>Ghi chú</Text>
-                                    <Text style={styles.detailLabel}>{selectedBooking.note}</Text>
+                            <TouchableOpacity style={styles.closeBtn} onPress={() => setShowDetailModal(false)}>
+                                <Ionicons name="close" size={24} color={COLORS.text} />
+                            </TouchableOpacity>
+                        </View>
+                        
+                        {selectedBooking && (
+                            <ScrollView style={styles.modalBody} showsVerticalScrollIndicator={false}>
+                                {/* Trạng thái hiện tại */}
+                                <View style={[styles.statusBanner, { backgroundColor: STATUS_COLORS[selectedBooking.status] + '15' }]}>
+                                    <View style={[styles.statusDot, { backgroundColor: STATUS_COLORS[selectedBooking.status] }]} />
+                                    <Text style={[styles.statusBannerText, { color: STATUS_COLORS[selectedBooking.status] }]}>
+                                        {STATUS_LABELS[selectedBooking.status]}
+                                    </Text>
                                 </View>
-                            )}
 
-                            <View style={styles.actionButtons}>
-                                {getStatusActions(selectedBooking).map((action) => (
-                                    <TouchableOpacity
-                                        key={action.status}
-                                        style={[styles.modalActionButton, { backgroundColor: action.color }]}
-                                        onPress={() => {
-                                            handleUpdateStatus(selectedBooking, action.status);
-                                            setShowDetailModal(false);
-                                        }}
-                                    >
-                                        <Text style={styles.modalActionText}>{action.label}</Text>
-                                    </TouchableOpacity>
-                                ))}
-                            </View>
-                        </ScrollView>
-                    )}
+                                {/* Section: Khách hàng & Cửa hàng */}
+                                <View style={styles.detailCard}>
+                                    <View style={styles.sectionHeader}>
+                                        <Ionicons name="person" size={18} color={COLORS.primary} />
+                                        <Text style={styles.sectionTitle}>Thông tin đối tác</Text>
+                                    </View>
+                                    
+                                    <View style={styles.infoRowMain}>
+                                        <View style={styles.infoLabelGroup}>
+                                            <Text style={styles.infoLabel}>Khách hàng</Text>
+                                            <Text style={styles.infoValue}>{selectedBooking.User?.name}</Text>
+                                        </View>
+                                        <TouchableOpacity style={styles.actionIconBtn} onPress={() => {}}>
+                                            <Ionicons name="call-outline" size={20} color={COLORS.primary} />
+                                        </TouchableOpacity>
+                                    </View>
+
+                                    <View style={styles.dividerLight} />
+
+                                    <View style={styles.infoRowMain}>
+                                        <View style={styles.infoLabelGroup}>
+                                            <Text style={styles.infoLabel}>Cửa hàng</Text>
+                                            <Text style={styles.infoValue}>{selectedBooking.Shop?.name}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {/* Section: Lịch hẹn */}
+                                <View style={styles.detailCard}>
+                                    <View style={styles.sectionHeader}>
+                                        <Ionicons name="calendar" size={18} color={COLORS.primary} />
+                                        <Text style={styles.sectionTitle}>Chi tiết dịch vụ</Text>
+                                    </View>
+
+                                    <View style={styles.gridContainer}>
+                                        <View style={styles.gridItem}>
+                                            <Text style={styles.infoLabel}>Dịch vụ</Text>
+                                            <Text style={styles.infoValueSmall}>{selectedBooking.Service?.name}</Text>
+                                        </View>
+                                        <View style={styles.gridItem}>
+                                            <Text style={styles.infoLabel}>Thợ cắt</Text>
+                                            <Text style={styles.infoValueSmall}>{selectedBooking.Barber?.name || 'Ngẫu nhiên'}</Text>
+                                        </View>
+                                    </View>
+
+                                    <View style={styles.gridContainer}>
+                                        <View style={styles.gridItem}>
+                                            <Text style={styles.infoLabel}>Ngày</Text>
+                                            <Text style={styles.infoValueSmall}>
+                                                {selectedBooking.booking_date ? new Date(selectedBooking.booking_date).toLocaleDateString('vi-VN') : ''}
+                                            </Text>
+                                        </View>
+                                        <View style={styles.gridItem}>
+                                            <Text style={styles.infoLabel}>Giờ</Text>
+                                            <Text style={styles.infoValueSmall}>{selectedBooking.booking_time}</Text>
+                                        </View>
+                                    </View>
+                                </View>
+
+                                {/* Section: Thanh toán */}
+                                <View style={styles.detailCard}>
+                                    <View style={styles.sectionHeader}>
+                                        <Ionicons name="wallet" size={18} color={COLORS.primary} />
+                                        <Text style={styles.sectionTitle}>Thanh toán</Text>
+                                    </View>
+                                    
+                                    <View style={styles.priceRow}>
+                                        <Text style={styles.priceLabel}>Giá gốc</Text>
+                                        <Text style={styles.priceValueOld}>{selectedBooking.original_price?.toLocaleString()}đ</Text>
+                                    </View>
+                                    <View style={styles.priceRow}>
+                                        <Text style={styles.priceLabel}>Giá thực tế</Text>
+                                        <Text style={styles.priceValueTotal}>{selectedBooking.actual_price?.toLocaleString() || selectedBooking.original_price?.toLocaleString()}đ</Text>
+                                    </View>
+                                    <View style={styles.priceRow}>
+                                        <Text style={styles.priceLabel}>Phương thức</Text>
+                                        <Text style={styles.paymentMethod}>{selectedBooking.paymentMethod || 'Tiền mặt'}</Text>
+                                    </View>
+                                </View>
+
+                                {selectedBooking.note && (
+                                    <View style={styles.detailCard}>
+                                        <Text style={styles.sectionTitle}>Ghi chú từ khách</Text>
+                                        <Text style={styles.noteText}>{selectedBooking.note}</Text>
+                                    </View>
+                                )}
+
+                                <View style={styles.modalActions}>
+                                    {getStatusActions(selectedBooking).map((action) => (
+                                        <TouchableOpacity
+                                            key={action.status}
+                                            style={[styles.modalActionButton, { backgroundColor: action.color }]}
+                                            onPress={() => {
+                                                handleUpdateStatus(selectedBooking, action.status);
+                                                setShowDetailModal(false);
+                                            }}
+                                        >
+                                            <Text style={styles.modalActionText}>{action.label}</Text>
+                                        </TouchableOpacity>
+                                    ))}
+                                </View>
+                                <View style={{ height: 40 }} />
+                            </ScrollView>
+                        )}
+                    </View>
                 </View>
             </Modal>
         </View>
@@ -241,36 +335,205 @@ export const ManageBookingsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
-    filterContainer: { maxHeight: 50, paddingHorizontal: SPACING.m, paddingVertical: SPACING.s },
-    filterButton: { paddingHorizontal: SPACING.m, paddingVertical: SPACING.xs, borderRadius: RADIUS.l, backgroundColor: COLORS.white, marginRight: SPACING.xs },
-    filterButtonActive: { backgroundColor: COLORS.primary },
-    filterText: { fontSize: 13, color: COLORS.textLight },
-    filterTextActive: { color: COLORS.white },
-    listContainer: { padding: SPACING.m, flexGrow: 1 },
-    bookingCard: { backgroundColor: COLORS.white, borderRadius: RADIUS.m, padding: SPACING.m, marginBottom: SPACING.m },
-    bookingHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: SPACING.s },
-    bookingInfo: {},
-    bookingId: { fontSize: 12, color: COLORS.textLight },
-    shopName: { fontWeight: '600', fontSize: 16 },
-    statusBadge: { paddingHorizontal: SPACING.s, paddingVertical: 4, borderRadius: RADIUS.s },
-    statusText: { fontSize: 11, color: COLORS.white },
-    bookingDetails: { gap: 4, marginBottom: SPACING.s },
-    detailRow: { flexDirection: 'row', alignItems: 'center', gap: SPACING.xs },
-    detailText: { fontSize: 13, color: COLORS.textLight },
-    bookingActions: { flexDirection: 'row', gap: SPACING.s, borderTopWidth: 1, borderTopColor: COLORS.border, paddingTop: SPACING.s },
-    actionButton: { flex: 1, paddingVertical: SPACING.xs, borderRadius: RADIUS.s, alignItems: 'center' },
-    actionButtonText: { color: COLORS.white, fontWeight: '600', fontSize: 13 },
+    container: { 
+        flex: 1, 
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
+    filterContainer: { 
+        maxHeight: 60, 
+        paddingHorizontal: SPACING.m, 
+        paddingVertical: SPACING.s,
+        backgroundColor: COLORS.white,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.border,
+    },
+    filterButton: { 
+        paddingHorizontal: 16, 
+        paddingVertical: 8, 
+        borderRadius: RADIUS.m, 
+        backgroundColor: '#F3F4F6', 
+        marginRight: SPACING.s,
+        borderWidth: 1,
+        borderColor: 'transparent',
+    },
+    filterButtonActive: { 
+        backgroundColor: COLORS.primary + '15',
+        borderColor: COLORS.primary,
+    },
+    filterText: { fontSize: 13, color: COLORS.textLight, fontWeight: '600' },
+    filterTextActive: { color: COLORS.primary },
+    
+    listContainer: { padding: SPACING.m, paddingBottom: 40 },
+    
+    // Modern Booking Card
+    bookingCard: { 
+        backgroundColor: COLORS.white, 
+        borderRadius: RADIUS.l, 
+        padding: SPACING.m, 
+        marginBottom: SPACING.m,
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
+        ...Platform.select({
+            ios: { shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.05, shadowRadius: 10 },
+            android: { elevation: 3 },
+            web: { boxShadow: '0 4px 12px rgba(0,0,0,0.05)' }
+        })
+    },
+    cardHeader: { 
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        marginBottom: SPACING.m 
+    },
+    shopSection: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+    shopIcon: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
+    shopName: { fontSize: 16, fontWeight: '800', color: COLORS.title },
+    bookingId: { fontSize: 11, color: COLORS.textLight, marginTop: 2 },
+    
+    statusBadge: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        paddingHorizontal: 10, 
+        paddingVertical: 4, 
+        borderRadius: 20 
+    },
+    statusDot: { width: 6, height: 6, borderRadius: 3, marginRight: 6 },
+    statusText: { fontSize: 11, fontWeight: '700' },
+    
+    divider: { height: 1, backgroundColor: '#F8FAFC', marginBottom: SPACING.m },
+    
+    cardBody: { gap: 12, marginBottom: SPACING.m },
+    infoRow: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    infoLabel: { fontSize: 13, color: COLORS.textLight, width: 85 },
+    infoValue: { fontSize: 13, fontWeight: '600', color: COLORS.text },
+    dateTimeRow: { flexDirection: 'row', gap: 16 },
+    dateTimeItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+    
+    cardFooter: { 
+        flexDirection: 'row', 
+        justifyContent: 'space-between', 
+        alignItems: 'center',
+        backgroundColor: '#F8FAFC',
+        padding: 12,
+        borderRadius: RADIUS.m,
+        marginHorizontal: -4,
+    },
+    priceSection: { gap: 2 },
+    priceLabel: { fontSize: 10, color: COLORS.textLight, textTransform: 'uppercase' },
+    priceValue: { fontSize: 15, fontWeight: '800', color: COLORS.primary },
+    
+    actionGroup: { flexDirection: 'row', alignItems: 'center', gap: 8 },
+    miniButton: { 
+        paddingHorizontal: 12, 
+        paddingVertical: 6, 
+        borderRadius: 8,
+        elevation: 1,
+    },
+    miniButtonText: { color: COLORS.white, fontSize: 12, fontWeight: '700' },
+    detailBtn: { padding: 4 },
+
     emptyContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', paddingVertical: SPACING.xxl },
     emptyText: { fontSize: 16, color: COLORS.textLight, marginTop: SPACING.m },
-    modalContainer: { flex: 1, backgroundColor: COLORS.white },
-    modalHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: SPACING.m, borderBottomWidth: 1, borderBottomColor: COLORS.border },
-    modalTitle: { fontSize: 18, fontWeight: 'bold' },
+
+    // Modal Styles Enhanced
+    modalOverlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0,0,0,0.4)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        padding: Platform.OS === 'web' ? 40 : 0,
+    },
+    modalContainer: {
+        flex: 1,
+        width: '100%',
+        maxWidth: 600,
+        backgroundColor: COLORS.background,
+        borderRadius: Platform.OS === 'web' ? RADIUS.l : 0,
+        overflow: 'hidden',
+    },
+    modalHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: SPACING.l,
+        backgroundColor: COLORS.white,
+        borderBottomWidth: 1,
+        borderBottomColor: COLORS.border,
+    },
+    modalTitle: { fontSize: 20, fontWeight: '800', color: COLORS.title },
+    modalSubtitle: { fontSize: 12, color: COLORS.textLight, marginTop: 2 },
+    closeBtn: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+        backgroundColor: '#F3F4F6',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
     modalBody: { padding: SPACING.m },
-    detailSection: { marginBottom: SPACING.l },
-    sectionTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: SPACING.s, color: COLORS.primary },
-    detailLabel: { fontSize: 14, marginBottom: 4, color: COLORS.text },
-    actionButtons: { flexDirection: 'row', gap: SPACING.s, marginTop: SPACING.m },
-    modalActionButton: { flex: 1, padding: SPACING.m, borderRadius: RADIUS.s, alignItems: 'center' },
-    modalActionText: { color: COLORS.white, fontWeight: '600' },
+    statusBanner: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: SPACING.m,
+        borderRadius: RADIUS.m,
+        marginBottom: SPACING.m,
+    },
+    statusDot: { width: 8, height: 8, borderRadius: 4, marginRight: 8 },
+    statusBannerText: { fontSize: 14, fontWeight: '700' },
+    detailCard: {
+        backgroundColor: COLORS.white,
+        borderRadius: RADIUS.m,
+        padding: SPACING.m,
+        marginBottom: SPACING.m,
+        borderWidth: 1,
+        borderColor: '#F1F5F9',
+    },
+    sectionHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: SPACING.m,
+        gap: 8,
+    },
+    sectionTitle: { fontSize: 15, fontWeight: '800', color: COLORS.title },
+    infoRowMain: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        paddingVertical: 4,
+    },
+    infoLabelGroup: { flex: 1 },
+    infoLabel: { fontSize: 12, color: COLORS.textLight, marginBottom: 2 },
+    infoValue: { fontSize: 15, fontWeight: '600', color: COLORS.text },
+    infoValueSmall: { fontSize: 14, fontWeight: '600', color: COLORS.text },
+    actionIconBtn: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: COLORS.primary + '10',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    dividerLight: { height: 1, backgroundColor: '#F8FAFC', marginVertical: 12 },
+    gridContainer: { flexDirection: 'row', gap: SPACING.m, marginBottom: 12 },
+    gridItem: { flex: 1 },
+    priceRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 8 },
+    priceLabel: { fontSize: 14, color: COLORS.textLight },
+    priceValueOld: { fontSize: 14, color: COLORS.textLight, textDecorationLine: 'line-through' },
+    priceValueTotal: { fontSize: 16, fontWeight: '800', color: COLORS.primary },
+    paymentMethod: { fontSize: 14, fontWeight: '600', color: COLORS.text },
+    noteText: { fontSize: 14, color: COLORS.text, fontStyle: 'italic', lineHeight: 20 },
+    modalActions: { flexDirection: 'row', gap: SPACING.m, marginTop: SPACING.s },
+    modalActionButton: {
+        flex: 1,
+        paddingVertical: 14,
+        borderRadius: RADIUS.m,
+        alignItems: 'center',
+        elevation: 2,
+    },
+    modalActionText: { color: COLORS.white, fontWeight: '700', fontSize: 15 },
 });

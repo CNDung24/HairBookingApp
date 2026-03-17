@@ -2,7 +2,7 @@ import React, { useState, useContext, useRef, useEffect } from 'react';
 import {
     View, Text, Image, TouchableOpacity, ScrollView,
     StyleSheet, StatusBar, Animated, FlatList, TextInput, Platform,
-    useWindowDimensions, Modal, Alert
+    useWindowDimensions, Modal, Alert, KeyboardAvoidingView, Keyboard
 } from 'react-native';
 import { Ionicons as Icon } from '@expo/vector-icons';
 import { useQuery } from '@tanstack/react-query';
@@ -132,29 +132,35 @@ export const ShopDetailScreen = ({ route, navigation }) => {
     );
 
     return (
-        <View style={styles.container}>
-            <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
+        <KeyboardAvoidingView 
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
+            keyboardShouldPersistTaps="handled"
+        >
+            <View style={styles.container}>
+                <StatusBar barStyle="light-content" translucent backgroundColor="transparent" />
 
-            {!isWeb && (
-                <Animated.View pointerEvents="box-none" style={[styles.stickyHeader, { paddingTop: insets.top + 8, opacity: headerOpacity }]}>
-                    <TouchableOpacity
-                        style={styles.stickyBackButton}
-                        onPress={() => navigation.goBack()}
-                    >
-                        <Icon name="arrow-back" size={24} color={COLORS.title} />
-                    </TouchableOpacity>
-                    <Text style={styles.stickyTitle} numberOfLines={1}>{shop.name}</Text>
-                    <TouchableOpacity style={styles.stickyActionButton}>
-                        <Icon name="heart-outline" size={22} color={COLORS.title} />
-                    </TouchableOpacity>
-                </Animated.View>
-            )}
+                {!isWeb && (
+                    <Animated.View pointerEvents="box-none" style={[styles.stickyHeader, { paddingTop: insets.top + 8, opacity: headerOpacity }]}>
+                        <TouchableOpacity
+                            style={styles.stickyBackButton}
+                            onPress={() => navigation.goBack()}
+                        >
+                            <Icon name="arrow-back" size={24} color={COLORS.title} />
+                        </TouchableOpacity>
+                        <Text style={styles.stickyTitle} numberOfLines={1}>{shop.name}</Text>
+                        <TouchableOpacity style={styles.stickyActionButton}>
+                            <Icon name="heart-outline" size={22} color={COLORS.title} />
+                        </TouchableOpacity>
+                    </Animated.View>
+                )}
 
-            <ScrollView
-                style={styles.scrollView}
-                contentContainerStyle={styles.scrollContent}
-                showsVerticalScrollIndicator={false}
-                onScroll={Animated.event(
+                <ScrollView
+                    style={styles.scrollView}
+                    contentContainerStyle={styles.scrollContent}
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
+                    onScroll={Animated.event(
                     [{ nativeEvent: { contentOffset: { y: scrollY } } }],
                     { useNativeDriver: false }
                 )}
@@ -341,6 +347,15 @@ export const ShopDetailScreen = ({ route, navigation }) => {
                                     {review.comment && (
                                         <Text style={styles.reviewComment}>{review.comment}</Text>
                                     )}
+                                    {review.reply && (
+                                        <View style={styles.replyContainer}>
+                                            <View style={styles.replyHeader}>
+                                                <Icon name="storefront-outline" size={12} color={COLORS.primary} />
+                                                <Text style={styles.replyLabel}> Phản hồi:</Text>
+                                            </View>
+                                            <Text style={styles.replyText}>{review.reply}</Text>
+                                        </View>
+                                    )}
                                 </View>
                             ))}
                         </View>
@@ -402,7 +417,7 @@ export const ShopDetailScreen = ({ route, navigation }) => {
                 </View>
             </View>
 
-            <Modal visible={showAllStylists} animationType="slide" transparent>
+            <Modal visible={showAllStylists} animationType="slide" transparent keyboardShouldPersistTaps="handled">
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <View style={styles.modalHeader}>
@@ -444,6 +459,7 @@ export const ShopDetailScreen = ({ route, navigation }) => {
                 </View>
             </Modal>
         </View>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -990,6 +1006,29 @@ const styles = StyleSheet.create({
         color: COLORS.textLight,
         marginTop: 8,
         lineHeight: 18,
+    },
+    replyContainer: {
+        backgroundColor: COLORS.primarySoft || '#FFF3E0',
+        borderRadius: RADIUS.s,
+        padding: SPACING.s,
+        marginTop: 8,
+        borderLeftWidth: 2,
+        borderLeftColor: COLORS.primary,
+    },
+    replyHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 4,
+    },
+    replyLabel: {
+        fontSize: 11,
+        fontWeight: '600',
+        color: COLORS.primary,
+    },
+    replyText: {
+        fontSize: 12,
+        color: COLORS.text,
+        lineHeight: 16,
     },
 
     barberCardSelected: {

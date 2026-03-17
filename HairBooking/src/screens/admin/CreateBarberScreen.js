@@ -1,9 +1,6 @@
 // src/screens/admin/CreateBarberScreen.js
 import React, { useState } from 'react';
-import {
-    View, Text, StyleSheet, Alert, ScrollView,
-    TouchableOpacity, KeyboardAvoidingView, Platform
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Platform, KeyboardAvoidingView } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useQuery } from '@tanstack/react-query';
@@ -159,7 +156,15 @@ export const CreateBarberScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: { 
+        flex: 1, 
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
     header: {
         flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
         paddingHorizontal: SPACING.l, paddingTop: Platform.OS === 'android' ? 40 : 60, paddingBottom: SPACING.m,

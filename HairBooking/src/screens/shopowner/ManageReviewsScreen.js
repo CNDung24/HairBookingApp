@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, TextInput, Alert, Modal } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, TextInput, Alert, Modal, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import client from '../../api/client';
 import { COLORS, SPACING, RADIUS } from '../../theme';
@@ -142,7 +142,7 @@ export const ManageReviewsScreen = () => {
                 }
             />
 
-            <Modal visible={showReplyModal} animationType="slide" transparent>
+            <Modal visible={showReplyModal} animationType="slide" transparent keyboardShouldPersistTaps="handled">
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Phản hồi đánh giá</Text>
@@ -170,7 +170,15 @@ export const ManageReviewsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: { 
+        flex: 1, 
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
     loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     listContainer: { padding: SPACING.m, flexGrow: 1 },
     reviewCard: {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Alert, Platform } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
@@ -123,6 +123,14 @@ export const AddBarberScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: { 
+        flex: 1, 
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
     form: { padding: SPACING.l },
 });

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Alert, ScrollView, Image, KeyboardAvoidingView, Platform, Keyboard, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import client from '../api/client';
@@ -78,55 +78,66 @@ export const ReviewScreen = ({ navigation, route }) => {
     }
 
     return (
-        <View style={[styles.container, { paddingTop: insets.top }]}>
-            <View style={styles.header}>
-                <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                    <Ionicons name="arrow-back" size={24} color={COLORS.title} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Đánh giá dịch vụ</Text>
-                <View style={styles.backButton} />
-            </View>
-
-            <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-                <View style={styles.bookingInfo}>
-                    <Text style={styles.shopName}>{booking.Shop?.name}</Text>
-                    <Text style={styles.serviceName}>{booking.Service?.name}</Text>
-                    <Text style={styles.bookingDate}>
-                        Ngày {booking.booking_date} lúc {booking.booking_time}
-                    </Text>
+        <KeyboardAvoidingView 
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
+        >
+            <View style={[styles.container, { paddingTop: insets.top }]}>
+                <View style={styles.header}>
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Ionicons name="arrow-back" size={24} color={COLORS.title} />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Đánh giá dịch vụ</Text>
+                    <View style={styles.backButton} />
                 </View>
 
-                <View style={styles.ratingSection}>
-                    <Text style={styles.sectionTitle}>Bạn cảm thấy dịch vụ như thế nào?</Text>
-                    {renderStars()}
-                    <Text style={styles.ratingText}>{getRatingText()}</Text>
-                </View>
-
-                <View style={styles.commentSection}>
-                    <Text style={styles.sectionTitle}>Nhận xét của bạn (không bắt buộc)</Text>
-                    <TextInput
-                        style={styles.commentInput}
-                        placeholder="Chia sẻ trải nghiệm của bạn..."
-                        placeholderTextColor={COLORS.textLight}
-                        value={comment}
-                        onChangeText={setComment}
-                        multiline
-                        numberOfLines={4}
-                        textAlignVertical="top"
-                    />
-                </View>
-
-                <TouchableOpacity
-                    style={[styles.submitButton, loading && styles.submitButtonDisabled]}
-                    onPress={handleSubmit}
-                    disabled={loading}
+                <ScrollView 
+                    contentContainerStyle={styles.content} 
+                    showsVerticalScrollIndicator={false}
+                    keyboardShouldPersistTaps="handled"
                 >
-                    <Text style={styles.submitButtonText}>
-                        {loading ? 'Đang gửi...' : 'Gửi đánh giá'}
-                    </Text>
-                </TouchableOpacity>
-            </ScrollView>
-        </View>
+                    <TouchableOpacity activeOpacity={1} onPress={Keyboard.dismiss}>
+                        <View style={styles.bookingInfo}>
+                            <Text style={styles.shopName}>{booking.Shop?.name}</Text>
+                            <Text style={styles.serviceName}>{booking.Service?.name}</Text>
+                            <Text style={styles.bookingDate}>
+                                Ngày {booking.booking_date} lúc {booking.booking_time}
+                            </Text>
+                        </View>
+
+                        <View style={styles.ratingSection}>
+                            <Text style={styles.sectionTitle}>Bạn cảm thấy dịch vụ như thế nào?</Text>
+                            {renderStars()}
+                            <Text style={styles.ratingText}>{getRatingText()}</Text>
+                        </View>
+
+                        <View style={styles.commentSection}>
+                            <Text style={styles.sectionTitle}>Nhận xét của bạn (không bắt buộc)</Text>
+                            <TextInput
+                                style={styles.commentInput}
+                                placeholder="Chia sẻ trải nghiệm của bạn..."
+                                placeholderTextColor={COLORS.textLight}
+                                value={comment}
+                                onChangeText={setComment}
+                                multiline
+                                numberOfLines={4}
+                                textAlignVertical="top"
+                            />
+                        </View>
+
+                        <TouchableOpacity
+                            style={[styles.submitButton, loading && styles.submitButtonDisabled]}
+                            onPress={handleSubmit}
+                            disabled={loading}
+                        >
+                            <Text style={styles.submitButtonText}>
+                                {loading ? 'Đang gửi...' : 'Gửi đánh giá'}
+                            </Text>
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                </ScrollView>
+            </View>
+        </KeyboardAvoidingView>
     );
 };
 
@@ -134,6 +145,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
     },
     header: {
         flexDirection: 'row',

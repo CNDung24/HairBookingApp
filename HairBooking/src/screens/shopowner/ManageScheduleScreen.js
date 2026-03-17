@@ -2,7 +2,7 @@
 import React, { useState, useContext } from 'react';
 import {
     View, Text, StyleSheet, ScrollView, TouchableOpacity,
-    Alert, FlatList, Modal, TextInput
+    Alert, FlatList, Modal, TextInput, Platform
 } from 'react-native';
 import { Ionicons as Icon } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -261,7 +261,7 @@ export const ManageScheduleScreen = ({ navigation, route }) => {
                 </>
             )}
 
-            <Modal visible={showAddModal} animationType="slide" transparent>
+            <Modal visible={showAddModal} animationType="slide" transparent keyboardShouldPersistTaps="handled">
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>
@@ -372,6 +372,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
     },
     header: {
         padding: SPACING.m,

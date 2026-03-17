@@ -15,6 +15,8 @@ import { ChangePasswordScreen } from '../screens/customer/ChangePasswordScreen';
 import { RegisterShopScreen } from '../screens/RegisterShopScreen';
 import { NotificationScreen } from '../screens/NotificationScreen';
 import { ReviewScreen } from '../screens/ReviewScreen';
+import { MyReviewsScreen } from '../screens/MyReviewsScreen';
+import { MyShopRequestsScreen } from '../screens/MyShopRequestsScreen';
 
 // Shop Owner Screens
 import { ShopOwnerDashboardScreen } from '../screens/shopowner/ShopOwnerDashboardScreen';
@@ -183,6 +185,26 @@ export const CustomerNavigator = () => {
                 options={{
                     headerShown: false,
                     path: 'review',
+                    tabBarStyle: { display: 'none' },
+                    tabBarVisible: false,
+                }}
+            />
+            <Stack.Screen
+                name="MyReviews"
+                component={MyReviewsScreen}
+                options={{
+                    headerShown: false,
+                    path: 'my-reviews',
+                    tabBarStyle: { display: 'none' },
+                    tabBarVisible: false,
+                }}
+            />
+            <Stack.Screen
+                name="MyShopRequests"
+                component={MyShopRequestsScreen}
+                options={{
+                    headerShown: false,
+                    path: 'my-shop-requests',
                     tabBarStyle: { display: 'none' },
                     tabBarVisible: false,
                 }}

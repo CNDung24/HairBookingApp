@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { AuthContext } from '../context/AuthContext';
@@ -17,54 +17,78 @@ export const RegisterScreen = ({ navigation }) => {
     const { register } = useContext(AuthContext);
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Create Account</Text>
-            <Text style={styles.subtitle}>Join us and get fresh.</Text>
-
-            <Formik
-                initialValues={{ name: '', email: '', password: '' }}
-                validationSchema={RegisterSchema}
-                onSubmit={async (values) => {
-                    try {
-                        await register(values.name, values.email, values.password);
-                        Alert.alert('Success', 'Account created! Please login.', [
-                            { text: 'OK', onPress: () => navigation.navigate('Login') }
-                        ]);
-                    } catch (e) {
-                        Alert.alert('Error', 'Registration failed.');
-                    }
-                }}
+        <KeyboardAvoidingView 
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
+        >
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent}
+                keyboardShouldPersistTaps="handled"
+                showsVerticalScrollIndicator={false}
             >
-                {({ handleChange, handleSubmit, values, errors, touched, isSubmitting }) => (
-                    <View style={styles.form}>
-                        <Input
-                            label="Full Name" icon="person-outline"
-                            value={values.name} onChangeText={handleChange('name')}
-                            error={touched.name && errors.name}
-                        />
-                        <Input
-                            label="Email" icon="mail-outline"
-                            value={values.email} onChangeText={handleChange('email')}
-                            error={touched.email && errors.email}
-                            autoCapitalize="none"
-                        />
-                        <Input
-                            label="Password" icon="lock-closed-outline"
-                            value={values.password} onChangeText={handleChange('password')}
-                            error={touched.password && errors.password}
-                            secureTextEntry
-                        />
-                        <Button title="Sign Up" onPress={handleSubmit} loading={isSubmitting} />
+                <TouchableOpacity activeOpacity={1} onPress={Keyboard.dismiss}>
+                    <View style={styles.container}>
+                        <Text style={styles.title}>Create Account</Text>
+                        <Text style={styles.subtitle}>Join us and get fresh.</Text>
+
+                        <Formik
+                            initialValues={{ name: '', email: '', password: '' }}
+                            validationSchema={RegisterSchema}
+                            onSubmit={async (values) => {
+                                try {
+                                    await register(values.name, values.email, values.password);
+                                    Alert.alert('Success', 'Account created! Please login.', [
+                                        { text: 'OK', onPress: () => navigation.navigate('Login') }
+                                    ]);
+                                } catch (e) {
+                                    Alert.alert('Error', 'Registration failed.');
+                                }
+                            }}
+                        >
+                            {({ handleChange, handleSubmit, values, errors, touched, isSubmitting }) => (
+                                <View style={styles.form}>
+                                    <Input
+                                        label="Full Name" icon="person-outline"
+                                        value={values.name} onChangeText={handleChange('name')}
+                                        error={touched.name && errors.name}
+                                    />
+                                    <Input
+                                        label="Email" icon="mail-outline"
+                                        value={values.email} onChangeText={handleChange('email')}
+                                        error={touched.email && errors.email}
+                                        autoCapitalize="none"
+                                    />
+                                    <Input
+                                        label="Password" icon="lock-closed-outline"
+                                        value={values.password} onChangeText={handleChange('password')}
+                                        error={touched.password && errors.password}
+                                        secureTextEntry
+                                    />
+                                    <Button title="Sign Up" onPress={handleSubmit} loading={isSubmitting} />
+                                </View>
+                            )}
+                        </Formik>
+                        <Button title="Back to Login" onPress={() => navigation.goBack()} variant="outline" />
                     </View>
-                )}
-            </Formik>
-            <Button title="Back to Login" onPress={() => navigation.goBack()} variant="outline" />
-        </View>
+                </TouchableOpacity>
+            </ScrollView>
+        </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background, padding: SPACING.l, justifyContent: 'center' },
+    scrollContent: { flexGrow: 1 },
+    container: { 
+        flex: 1, 
+        backgroundColor: COLORS.background, 
+        padding: SPACING.l, 
+        justifyContent: 'center',
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
     title: { fontSize: 28, fontWeight: '800', color: COLORS.secondary },
     subtitle: { fontSize: 16, color: COLORS.textLight, marginTop: 8, marginBottom: SPACING.xl },
     form: { marginBottom: SPACING.m },

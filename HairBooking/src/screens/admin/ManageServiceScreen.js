@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity, Modal,
-    TextInput, StatusBar, Alert, Switch
+    TextInput, StatusBar, Alert, Switch, Platform
 } from 'react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons as Icon } from '@expo/vector-icons';
@@ -123,6 +123,7 @@ export const ManageServiceScreen = ({ navigation }) => {
                 <View style={styles.loading}><Text>Đang tải...</Text></View>
             ) : (
                 <FlatList
+                    style={{ flex: 1 }}
                     data={services || []}
                     keyExtractor={(item) => item.id.toString()}
                     renderItem={renderService}
@@ -131,7 +132,7 @@ export const ManageServiceScreen = ({ navigation }) => {
                 />
             )}
 
-            <Modal visible={modalVisible} animationType="slide" transparent>
+            <Modal visible={modalVisible} animationType="slide" transparent keyboardShouldPersistTaps="handled">
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <View style={styles.modalHeader}>
@@ -200,7 +201,15 @@ export const ManageServiceScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: { 
+        flex: 1, 
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: SPACING.l },
     headerTitle: { fontSize: 18, fontWeight: '700', color: COLORS.title },
     loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshControl, Modal, TextInput } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Alert, RefreshControl, Modal, TextInput, KeyboardAvoidingView, Platform, ScrollView, Keyboard } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { AuthContext } from '../../context/AuthContext';
 import client from '../../api/client';
@@ -37,7 +37,7 @@ export const ManageShopRequestsScreen = ({ navigation }) => {
 
     const handleApprove = async (id) => {
         console.log('handleApprove called with id:', id);
-        
+
         // Gọi trực tiếp không qua alert confirm
         try {
             const res = await client.patch(`/admin/shop-requests/${id}/approve`);
@@ -97,17 +97,17 @@ export const ManageShopRequestsScreen = ({ navigation }) => {
                     <Text style={styles.statusText}>{getStatusText(item.status)}</Text>
                 </View>
             </View>
-            
+
             <View style={styles.infoRow}>
                 <Ionicons name="location-outline" size={16} color={COLORS.textLight} />
                 <Text style={styles.infoText}>{item.address}</Text>
             </View>
-            
+
             <View style={styles.infoRow}>
                 <Ionicons name="call-outline" size={16} color={COLORS.textLight} />
                 <Text style={styles.infoText}>{item.phone}</Text>
             </View>
-            
+
             <View style={styles.infoRow}>
                 <Ionicons name="mail-outline" size={16} color={COLORS.textLight} />
                 <Text style={styles.infoText}>{item.email}</Text>
@@ -124,14 +124,14 @@ export const ManageShopRequestsScreen = ({ navigation }) => {
 
             {item.status === 'pending' ? (
                 <View style={styles.buttonRow}>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[styles.button, styles.rejectButton]}
                         onPress={() => handleReject(item.id)}
                     >
                         <Ionicons name="close" size={18} color={COLORS.surface} />
                         <Text style={styles.buttonText}>Từ chối</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[styles.button, styles.approveButton]}
                         onPress={() => handleApprove(item.id)}
                     >
@@ -148,12 +148,15 @@ export const ManageShopRequestsScreen = ({ navigation }) => {
     return (
         <View style={styles.container}>
             <View style={styles.header}>
+                <TouchableOpacity onPress={() => navigation.goBack()}>
+                    <Ionicons name="arrow-back" size={24} color={COLORS.secondary} />
+                </TouchableOpacity>
                 <Text style={styles.title}>Yêu cầu đăng ký shop</Text>
                 {pendingCount > 0 ? (
                     <View style={styles.badge}>
-                        <Text style={styles.badgeText}>{pendingCount} chờ duyệt</Text>
+                        <Text style={styles.badgeText}>{pendingCount}</Text>
                     </View>
-                ) : null}
+                ) : <View style={{ width: 24 }} />}
             </View>
 
             <FlatList
@@ -172,9 +175,12 @@ export const ManageShopRequestsScreen = ({ navigation }) => {
                 }
             />
 
-            <Modal visible={showRejectModal} animationType="slide" transparent>
+            <Modal visible={showRejectModal} animationType="slide" transparent keyboardShouldPersistTaps="handled">
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
+                        <TouchableOpacity style={styles.modalClose} onPress={() => setShowRejectModal(false)}>
+                            <Text>X</Text>
+                        </TouchableOpacity>
                         <Text style={styles.modalTitle}>Từ chối yêu cầu</Text>
                         <Text style={styles.modalLabel}>Lý do từ chối:</Text>
                         <TextInput
@@ -186,14 +192,14 @@ export const ManageShopRequestsScreen = ({ navigation }) => {
                             numberOfLines={4}
                         />
                         <View style={styles.modalButtons}>
-                            <TouchableOpacity 
-                                style={styles.modalCancelButton} 
+                            <TouchableOpacity
+                                style={styles.modalCancelButton}
                                 onPress={() => setShowRejectModal(false)}
                             >
                                 <Text style={styles.modalCancelText}>Hủy</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity 
-                                style={styles.modalSubmitButton} 
+                            <TouchableOpacity
+                                style={styles.modalSubmitButton}
                                 onPress={submitReject}
                             >
                                 <Text style={styles.modalSubmitText}>Từ chối</Text>
@@ -207,7 +213,15 @@ export const ManageShopRequestsScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
@@ -218,11 +232,13 @@ const styles = StyleSheet.create({
     title: { fontSize: 20, fontWeight: '700', color: COLORS.secondary },
     badge: {
         backgroundColor: COLORS.warning,
-        paddingHorizontal: SPACING.m,
-        paddingVertical: SPACING.xs,
+        paddingHorizontal: SPACING.s,
+        paddingVertical: 2,
         borderRadius: RADIUS.m,
+        minWidth: 24,
+        alignItems: 'center',
     },
-    badgeText: { color: COLORS.surface, fontWeight: '600', fontSize: 12 },
+    badgeText: { color: COLORS.surface, fontWeight: '700', fontSize: 11 },
     list: { padding: SPACING.m },
     card: {
         backgroundColor: COLORS.surface,

@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity, Modal,
-    TextInput, StatusBar, Alert, ScrollView
+    TextInput, StatusBar, Alert, ScrollView, KeyboardAvoidingView, Platform, Keyboard
 } from 'react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Ionicons as Icon } from '@expo/vector-icons';
@@ -82,7 +82,7 @@ export const BarberScheduleScreen = ({ navigation }) => {
 
     const renderSchedule = ({ item: day }) => {
         const schedule = getScheduleForDay(day.key);
-        
+
         return (
             <View style={styles.dayCard}>
                 <View style={styles.dayHeader}>
@@ -93,7 +93,7 @@ export const BarberScheduleScreen = ({ navigation }) => {
                         </TouchableOpacity>
                     ) : null}
                 </View>
-                
+
                 {schedule ? (
                     schedule.isOff ? (
                         <View style={styles.offStatus}>
@@ -121,7 +121,7 @@ export const BarberScheduleScreen = ({ navigation }) => {
                 )}
 
                 <View style={styles.dayActions}>
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         style={[styles.actionBtn, schedule?.isOff && styles.actionBtnActive]}
                         onPress={() => {
                             if (schedule?.isOff) {
@@ -138,19 +138,19 @@ export const BarberScheduleScreen = ({ navigation }) => {
                             {schedule?.isOff ? 'Làm việc' : 'Nghỉ'}
                         </Text>
                     </TouchableOpacity>
-                    
+
                     {!schedule?.isOff && (
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             style={styles.actionBtn}
                             onPress={() => {
-                                setForm({ 
-                                    ...form, 
-                                    dayOfWeek: day.key, 
+                                setForm({
+                                    ...form,
+                                    dayOfWeek: day.key,
                                     startTime: schedule?.startTime || '09:00',
                                     endTime: schedule?.endTime || '18:00',
                                     breakStart: schedule?.breakStart || '12:00',
                                     breakEnd: schedule?.breakEnd || '13:00',
-                                    isOff: false 
+                                    isOff: false
                                 });
                                 setSelectedDay(day);
                                 setModalVisible(true);
@@ -166,113 +166,126 @@ export const BarberScheduleScreen = ({ navigation }) => {
     };
 
     return (
-        <View style={[styles.container, { paddingTop: insets.top }]}>
-            <StatusBar barStyle="dark-content" />
-            
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="arrow-back" size={24} color={COLORS.title} />
-                </TouchableOpacity>
-                <Text style={styles.headerTitle}>Lịch làm việc</Text>
-                <View style={{ width: 24 }} />
-            </View>
+        <KeyboardAvoidingView
+            style={{ flex: 1 }}
+            behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
+        >
+            <View style={[styles.container, { paddingTop: insets.top }]}>
+                <StatusBar barStyle="dark-content" />
 
-            {isLoading ? (
-                <View style={styles.loading}><Text>Đang tải...</Text></View>
-            ) : (
-                <FlatList
-                    data={DAYS_OF_WEEK}
-                    keyExtractor={(item) => item.key}
-                    renderItem={renderSchedule}
-                    contentContainerStyle={styles.list}
-                />
-            )}
-
-            <Modal visible={modalVisible} animationType="slide" transparent>
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>
-                                {form.isOff ? 'Đăng ký nghỉ' : 'Cập nhật lịch'} - {selectedDay?.label}
-                            </Text>
-                            <TouchableOpacity onPress={() => setModalVisible(false)}>
-                                <Icon name="close" size={24} color={COLORS.title} />
-                            </TouchableOpacity>
-                        </View>
-
-                        {form.isOff ? (
-                            <>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Lý do nghỉ (tùy chọn)"
-                                    value={form.offReason}
-                                    onChangeText={(t) => setForm({ ...form, offReason: t })}
-                                />
-                                <TouchableOpacity 
-                                    style={[styles.submitBtn, { backgroundColor: '#EF4444' }]} 
-                                    onPress={() => setDayOffMutation.mutate({ dayOfWeek: form.dayOfWeek, offReason: form.offReason })}
-                                >
-                                    <Text style={styles.submitText}>Xác nhận nghỉ</Text>
-                                </TouchableOpacity>
-                            </>
-                        ) : (
-                            <>
-                                <Text style={styles.label}>Giờ bắt đầu</Text>
-                                <View style={styles.timeSelect}>
-                                    {TIME_SLOTS.map((time) => (
-                                        <TouchableOpacity
-                                            key={time}
-                                            style={[styles.timeChip, form.startTime === time && styles.timeChipActive]}
-                                            onPress={() => setForm({ ...form, startTime: time })}
-                                        >
-                                            <Text style={[styles.timeChipText, form.startTime === time && styles.timeChipTextActive]}>{time}</Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </View>
-
-                                <Text style={styles.label}>Giờ kết thúc</Text>
-                                <View style={styles.timeSelect}>
-                                    {TIME_SLOTS.map((time) => (
-                                        <TouchableOpacity
-                                            key={time}
-                                            style={[styles.timeChip, form.endTime === time && styles.timeChipActive]}
-                                            onPress={() => setForm({ ...form, endTime: time })}
-                                        >
-                                            <Text style={[styles.timeChipText, form.endTime === time && styles.timeChipTextActive]}>{time}</Text>
-                                        </TouchableOpacity>
-                                    ))}
-                                </View>
-
-                                <Text style={styles.label}>Nghỉ trưa (tùy chọn)</Text>
-                                <View style={styles.row}>
-                                    <TextInput
-                                        style={[styles.input, { flex: 1 }]}
-                                        placeholder="Từ"
-                                        value={form.breakStart}
-                                        onChangeText={(t) => setForm({ ...form, breakStart: t })}
-                                    />
-                                    <TextInput
-                                        style={[styles.input, { flex: 1 }]}
-                                        placeholder="Đến"
-                                        value={form.breakEnd}
-                                        onChangeText={(t) => setForm({ ...form, breakEnd: t })}
-                                    />
-                                </View>
-
-                                <TouchableOpacity style={styles.submitBtn} onPress={handleCreate}>
-                                    <Text style={styles.submitText}>Lưu lịch</Text>
-                                </TouchableOpacity>
-                            </>
-                        )}
-                    </View>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()}>
+                        <Icon name="arrow-back" size={24} color={COLORS.title} />
+                    </TouchableOpacity>
+                    <Text style={styles.headerTitle}>Lịch làm việc</Text>
+                    <View style={{ width: 24 }} />
                 </View>
-            </Modal>
-        </View>
+
+                {isLoading ? (
+                    <View style={styles.loading}><Text>Đang tải...</Text></View>
+                ) : (
+                    <FlatList
+                        data={DAYS_OF_WEEK}
+                        keyExtractor={(item) => item.key}
+                        renderItem={renderSchedule}
+                        contentContainerStyle={styles.list}
+                    />
+                )}
+
+                <Modal visible={modalVisible} animationType="slide" transparent keyboardShouldPersistTaps="handled">
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContent}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>
+                                    {form.isOff ? 'Đăng ký nghỉ' : 'Cập nhật lịch'} - {selectedDay?.label}
+                                </Text>
+                                <TouchableOpacity onPress={() => setModalVisible(false)}>
+                                    <Icon name="close" size={24} color={COLORS.title} />
+                                </TouchableOpacity>
+                            </View>
+
+                            {form.isOff ? (
+                                <>
+                                    <TextInput
+                                        style={styles.input}
+                                        placeholder="Lý do nghỉ (tùy chọn)"
+                                        value={form.offReason}
+                                        onChangeText={(t) => setForm({ ...form, offReason: t })}
+                                    />
+                                    <TouchableOpacity
+                                        style={[styles.submitBtn, { backgroundColor: '#EF4444' }]}
+                                        onPress={() => setDayOffMutation.mutate({ dayOfWeek: form.dayOfWeek, offReason: form.offReason })}
+                                    >
+                                        <Text style={styles.submitText}>Xác nhận nghỉ</Text>
+                                    </TouchableOpacity>
+                                </>
+                            ) : (
+                                <>
+                                    <Text style={styles.label}>Giờ bắt đầu</Text>
+                                    <View style={styles.timeSelect}>
+                                        {TIME_SLOTS.map((time) => (
+                                            <TouchableOpacity
+                                                key={time}
+                                                style={[styles.timeChip, form.startTime === time && styles.timeChipActive]}
+                                                onPress={() => setForm({ ...form, startTime: time })}
+                                            >
+                                                <Text style={[styles.timeChipText, form.startTime === time && styles.timeChipTextActive]}>{time}</Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+
+                                    <Text style={styles.label}>Giờ kết thúc</Text>
+                                    <View style={styles.timeSelect}>
+                                        {TIME_SLOTS.map((time) => (
+                                            <TouchableOpacity
+                                                key={time}
+                                                style={[styles.timeChip, form.endTime === time && styles.timeChipActive]}
+                                                onPress={() => setForm({ ...form, endTime: time })}
+                                            >
+                                                <Text style={[styles.timeChipText, form.endTime === time && styles.timeChipTextActive]}>{time}</Text>
+                                            </TouchableOpacity>
+                                        ))}
+                                    </View>
+
+                                    <Text style={styles.label}>Nghỉ trưa (tùy chọn)</Text>
+                                    <View style={styles.row}>
+                                        <TextInput
+                                            style={[styles.input, { flex: 1 }]}
+                                            placeholder="Từ"
+                                            value={form.breakStart}
+                                            onChangeText={(t) => setForm({ ...form, breakStart: t })}
+                                        />
+                                        <TextInput
+                                            style={[styles.input, { flex: 1 }]}
+                                            placeholder="Đến"
+                                            value={form.breakEnd}
+                                            onChangeText={(t) => setForm({ ...form, breakEnd: t })}
+                                        />
+                                    </View>
+
+                                    <TouchableOpacity style={styles.submitBtn} onPress={handleCreate}>
+                                        <Text style={styles.submitText}>Lưu lịch</Text>
+                                    </TouchableOpacity>
+                                </>
+                            )}
+                        </View>
+                    </View>
+                </Modal>
+            </View>
+        </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
     header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: SPACING.l },
     headerTitle: { fontSize: 18, fontWeight: '700', color: COLORS.title },
     loading: { flex: 1, justifyContent: 'center', alignItems: 'center' },

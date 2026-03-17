@@ -1,5 +1,8 @@
 import React, { useContext, useState } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Alert, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
+import {
+    View, Text, StyleSheet, TouchableOpacity, Image,
+    ScrollView, KeyboardAvoidingView, Platform, Alert
+} from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
@@ -78,7 +81,15 @@ export const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: { 
+        flex: 1, 
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
     scrollContent: { flexGrow: 1, padding: SPACING.l, justifyContent: 'center' },
     skipBtn: { position: 'absolute', top: 50, right: 20, zIndex: 10 },
     skipText: { color: COLORS.primary, fontWeight: '700', fontSize: 16 },

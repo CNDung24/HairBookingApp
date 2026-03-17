@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert, Image, TextInput, Modal } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, RefreshControl, Alert, Image, TextInput, Modal, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import client from '../../api/client';
 import { COLORS, SPACING, RADIUS } from '../../theme';
@@ -168,7 +168,7 @@ export const ManageShopsScreen = () => {
                 }
             />
 
-            <Modal visible={showEditModal} animationType="slide">
+            <Modal visible={showEditModal} animationType="slide" transparent keyboardShouldPersistTaps="handled">
                 <View style={styles.modalContainer}>
                     <View style={styles.modalHeader}>
                         <Text style={styles.modalTitle}>Chỉnh sửa cửa hàng</Text>
@@ -206,7 +206,15 @@ export const ManageShopsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: { 
+        flex: 1, 
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
     searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: COLORS.white, margin: SPACING.m, padding: SPACING.s, borderRadius: RADIUS.s, gap: SPACING.s },
     searchInput: { flex: 1, fontSize: 14 },
     listContainer: { padding: SPACING.m, paddingTop: 0, flexGrow: 1 },

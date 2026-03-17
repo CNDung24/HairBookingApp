@@ -89,12 +89,17 @@ export const ProfileScreen = () => {
                         <MenuItem 
                             icon="star-outline" 
                             title="My Reviews" 
-                            onPress={() => {}} 
+                            onPress={() => navigation.navigate('MyReviews')} 
                         />
                         <MenuItem 
                             icon="business-outline" 
                             title="Đăng ký mở tiệm" 
                             onPress={() => navigation.navigate('RegisterShop')} 
+                        />
+                        <MenuItem 
+                            icon="document-text-outline" 
+                            title="Yêu cầu của tôi" 
+                            onPress={() => navigation.navigate('MyShopRequests')} 
                         />
                     </>
                 )}

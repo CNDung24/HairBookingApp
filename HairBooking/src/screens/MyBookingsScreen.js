@@ -2,7 +2,7 @@
 import React, { useContext, useState, useMemo } from 'react';
 import {
     View, Text, FlatList, StyleSheet, TouchableOpacity,
-    ActivityIndicator, StatusBar
+    ActivityIndicator, StatusBar, Platform
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useQuery } from '@tanstack/react-query';
@@ -107,8 +107,8 @@ export const MyBookingsScreen = () => {
     // --- COMPONENT RENDER ITEM ---
     const renderItem = ({ item }) => (
         <View style={{ marginBottom: SPACING.m }}>
-            <BookingCard 
-                booking={item} 
+            <BookingCard
+                booking={item}
                 onPress={() => {
                     if (canReview(item)) {
                         navigation.navigate('Review', { booking: item });
@@ -116,7 +116,7 @@ export const MyBookingsScreen = () => {
                 }}
             />
             {canReview(item) && (
-                <TouchableOpacity 
+                <TouchableOpacity
                     style={styles.reviewButton}
                     onPress={() => navigation.navigate('Review', { booking: item })}
                 >
@@ -157,8 +157,8 @@ export const MyBookingsScreen = () => {
 
             {/* Header */}
             <View style={styles.header}>
-                <TouchableOpacity 
-                    style={styles.backButton} 
+                <TouchableOpacity
+                    style={styles.backButton}
                     onPress={() => navigation.goBack()}
                 >
                     <Icon name="arrow-back" size={24} color={COLORS.title} />
@@ -195,7 +195,15 @@ export const MyBookingsScreen = () => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: {
+        flex: 1,
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
 
     // Header
     header: {

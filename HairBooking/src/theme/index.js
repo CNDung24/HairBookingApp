@@ -34,6 +34,7 @@ export const COLORS = {
     warningLight: '#FFFBEB',
 
     overlay: 'rgba(0,0,0,0.4)',
+    white: '#FFFFFF',
 };
 
 export const SPACING = { s: 8, m: 16, l: 24 };

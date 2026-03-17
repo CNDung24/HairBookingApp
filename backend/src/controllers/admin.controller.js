@@ -1,4 +1,4 @@
-const { User, Barber, Shop, Booking, Service, Review, ShopRequest } = require('../models');
+const { User, Barber, Shop, Booking, Service, Review, ShopRequest, Notification } = require('../models');
 const bcrypt = require('bcryptjs');
 const { Op } = require('sequelize');
 const sequelize = require('../config/database');
@@ -238,6 +238,14 @@ exports.approveShopRequest = async (req, res) => {
 
         await transaction.commit();
 
+        await Notification.create({
+            title: 'Yêu cầu đăng ký shop đã được duyệt',
+            message: `Chúc mừng! Yêu cầu đăng ký shop "${shop.name}" đã được admin duyệt. Bây giờ bạn có thể quản lý shop của mình.`,
+            type: 'shop_request',
+            UserId: user.id,
+            isRead: false
+        });
+
         res.json({
             message: 'Yêu cầu đã được duyệt, shop đã được tạo',
             shop
@@ -266,6 +274,14 @@ exports.rejectShopRequest = async (req, res) => {
         await request.update({
             status: 'rejected',
             rejectReason: rejectReason || 'Yêu cầu không được duyệt'
+        });
+
+        await Notification.create({
+            title: 'Yêu cầu đăng ký shop bị từ chối',
+            message: `Rất tiếc! Yêu cầu đăng ký shop "${request.name}" đã bị từ chối. ${rejectReason ? 'Lý do: ' + rejectReason : ''}`,
+            type: 'shop_request',
+            UserId: request.UserId,
+            isRead: false
         });
 
         res.json({

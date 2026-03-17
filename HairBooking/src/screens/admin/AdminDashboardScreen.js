@@ -1,7 +1,7 @@
 // src/screens/admin/AdminDashboardScreen.js
 import React from 'react';
 import {
-    View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar
+    View, Text, StyleSheet, ScrollView, TouchableOpacity, StatusBar, Platform
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { Ionicons as Icon } from '@expo/vector-icons';
@@ -97,13 +97,6 @@ export const AdminDashboardScreen = ({ navigation }) => {
                         />
                         <View style={styles.divider} />
                         <ActionItem
-                            label="Quản lý Dịch vụ"
-                            subLabel="Thêm, sửa, xóa dịch vụ"
-                            icon="cut-outline"
-                            onPress={() => navigation.navigate('ManageService')}
-                        />
-                        <View style={styles.divider} />
-                        <ActionItem
                             label="Quản lý Users"
                             subLabel="Danh sách khách hàng & Barbers"
                             icon="people-outline"
@@ -131,7 +124,15 @@ export const AdminDashboardScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: COLORS.background },
+    container: { 
+        flex: 1, 
+        backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
+    },
 
     // Header
     header: {

@@ -5,7 +5,7 @@ const Notification = sequelize.define('Notification', {
     title: { type: DataTypes.STRING, allowNull: false },
     message: { type: DataTypes.TEXT, allowNull: false },
     type: { 
-        type: DataTypes.ENUM('booking', 'reminder', 'promotion', 'system', 'review'),
+        type: DataTypes.ENUM('booking', 'reminder', 'promotion', 'system', 'review', 'shop_request'),
         defaultValue: 'system'
     },
     data: { type: DataTypes.JSON }, // dữ liệu liên quan

@@ -88,7 +88,8 @@ exports.getMyReviews = async (req, res) => {
             where: { UserId: req.user.id },
             include: [
                 { model: Barber, attributes: ['id', 'name', 'avatar'] },
-                { model: Shop, attributes: ['id', 'name'] }
+                { model: Shop, attributes: ['id', 'name'] },
+                { model: Service, attributes: ['id', 'name'] }
             ],
             order: [['createdAt', 'DESC']]
         });

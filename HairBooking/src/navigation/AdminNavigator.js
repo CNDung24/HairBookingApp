@@ -5,7 +5,6 @@ import { Ionicons } from '@expo/vector-icons';
 
 import { AdminDashboardScreen } from '../screens/admin/AdminDashboardScreen';
 import { CreateBarberScreen } from '../screens/admin/CreateBarberScreen';
-import { ManageServiceScreen } from '../screens/admin/ManageServiceScreen';
 import { ManageShopRequestsScreen } from '../screens/admin/ManageShopRequestsScreen';
 import { ManageUsersScreen } from '../screens/admin/ManageUsersScreen';
 import { ManageShopsScreen } from '../screens/admin/ManageShopsScreen';
@@ -81,11 +80,6 @@ export const AdminNavigator = () => {
                 name="CreateBarber"
                 component={CreateBarberScreen}
                 options={{ headerShown: true, title: 'Add New Barber', path: 'admin/create-barber' }}
-            />
-            <Stack.Screen
-                name="ManageService"
-                component={ManageServiceScreen}
-                options={{ headerShown: false, path: 'admin/manage-service' }}
             />
             <Stack.Screen
                 name="ManageShopRequests"

@@ -2,7 +2,7 @@
 import React from 'react';
 import {
     View, Text, StyleSheet, FlatList, TouchableOpacity,
-    RefreshControl, Alert
+    RefreshControl, Alert, Platform
 } from 'react-native';
 import { Ionicons as Icon } from '@expo/vector-icons';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -90,6 +90,8 @@ export const NotificationScreen = ({ navigation }) => {
                 return 'pricetag';
             case 'system':
                 return 'settings';
+            case 'shop_request':
+                return 'storefront';
             default:
                 return 'notifications';
         }
@@ -130,7 +132,7 @@ export const NotificationScreen = ({ navigation }) => {
                     {item.title}
                 </Text>
                 <Text style={styles.content} numberOfLines={2}>
-                    {item.content}
+                    {item.message || item.content}
                 </Text>
                 <Text style={styles.date}>
                     {formatDate(item.createdAt)}
@@ -158,6 +160,7 @@ export const NotificationScreen = ({ navigation }) => {
                 )}
             </View>
             <FlatList
+                style={{ flex: 1 }}
                 data={data}
                 renderItem={renderItem}
                 keyExtractor={item => item.id.toString()}
@@ -179,6 +182,11 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: COLORS.background,
+        ...(Platform.OS === 'web' && {
+            height: '100vh',
+            maxHeight: '100vh',
+            overflow: 'hidden',
+        }),
     },
     header: {
         flexDirection: 'row',
