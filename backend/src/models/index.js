@@ -10,6 +10,7 @@ const WorkingSchedule = require('./WorkingSchedule');
 const Notification = require('./Notification');
 const Payment = require('./Payment');
 const ShopRequest = require('./ShopRequest');
+const Banner = require('./Banner');
 
 // =======================
 // RELATIONSHIPS
@@ -76,7 +77,7 @@ Payment.belongsTo(Booking, { foreignKey: 'bookingId' });
 User.hasMany(ShopRequest, { foreignKey: 'UserId' });
 ShopRequest.belongsTo(User, { foreignKey: 'UserId' });
 
-module.exports = {
+module.exports = { 
     sequelize, 
     User, 
     Shop, 
@@ -87,5 +88,6 @@ module.exports = {
     WorkingSchedule,
     Notification,
     Payment,
-    ShopRequest
+    ShopRequest,
+    Banner
 };

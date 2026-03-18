@@ -16,6 +16,7 @@ const shopRequestRoutes = require('./routes/shopRequest.routes');
 const reviewRoutes = require('./routes/review.routes');
 const notificationRoutes = require('./routes/notification.routes');
 const uploadRoutes = require('./routes/upload.routes');
+const bannerRoutes = require('./routes/banner.routes');
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use('/api/shop-requests', shopRequestRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api', bannerRoutes);
 
 // Sync Database (non-destructive)
 sequelize.sync({ force: false })

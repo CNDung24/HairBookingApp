@@ -14,6 +14,14 @@ exports.verifyToken = (req, res, next) => {
     }
 };
 
+exports.isAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).json({ message: 'Chỉ admin mới có quyền truy cập' });
+    }
+};
+
 // Hàm kiểm tra role
 exports.authorize = (roles = [], allowOwnData = false) => {
     return (req, res, next) => {
