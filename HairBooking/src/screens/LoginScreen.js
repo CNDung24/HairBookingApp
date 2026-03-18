@@ -1,7 +1,7 @@
 import React, { useContext, useState } from 'react';
 import {
-    View, Text, StyleSheet, TouchableOpacity, Image,
-    ScrollView, KeyboardAvoidingView, Platform, Alert
+    View, Text, StyleSheet, TouchableOpacity,
+    ScrollView, Alert, KeyboardAvoidingView
 } from 'react-native';
 import { AuthContext } from '../context/AuthContext';
 import { Button } from '../components/Button';
@@ -31,42 +31,37 @@ export const LoginScreen = ({ navigation }) => {
     };
 
     return (
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior="padding"
+            keyboardVerticalOffset={0}
         >
             <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-                <TouchableOpacity
-                    style={styles.skipBtn}
-                    onPress={() => navigation.goBack()}
-                >
-                    <Text style={styles.skipText}>Skip & Explore</Text>
-                </TouchableOpacity>
 
                 <Text style={styles.title}>Welcome Back 👋</Text>
                 <Text style={styles.subtitle}>Book your best look today.</Text>
 
                 <View style={styles.form}>
                     <Input
-                        label="Email" 
+                        label="Email"
                         icon="mail-outline"
-                        value={email} 
+                        value={email}
                         onChangeText={setEmail}
                         autoCapitalize="none"
                         keyboardType="email-address"
                         placeholder="Enter your email"
                     />
                     <Input
-                        label="Password" 
+                        label="Password"
                         icon="lock-closed-outline"
-                        value={password} 
+                        value={password}
                         onChangeText={setPassword}
                         secureTextEntry
                         placeholder="Enter your password"
                     />
-                    <Button 
-                        title={loading ? "Signing in..." : "Sign In"} 
-                        onPress={handleLogin} 
+                    <Button
+                        title={loading ? "Signing in..." : "Sign In"}
+                        onPress={handleLogin}
                         loading={loading}
                         style={styles.button}
                     />
@@ -81,16 +76,15 @@ export const LoginScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    container: { 
-        flex: 1, 
+    container: {
+        flex: 1,
         backgroundColor: COLORS.background,
-        ...(Platform.OS === 'web' && {
-            height: '100vh',
-            maxHeight: '100vh',
-            overflow: 'hidden',
-        }),
     },
-    scrollContent: { flexGrow: 1, padding: SPACING.l, justifyContent: 'center' },
+    scrollContent: {
+        flexGrow: 1,
+        padding: SPACING.l,
+        paddingTop: 100,
+    },
     skipBtn: { position: 'absolute', top: 50, right: 20, zIndex: 10 },
     skipText: { color: COLORS.primary, fontWeight: '700', fontSize: 16 },
     title: { fontSize: 28, fontWeight: '800', color: COLORS.secondary },

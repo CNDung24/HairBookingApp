@@ -168,7 +168,8 @@ export const BarberScheduleScreen = ({ navigation }) => {
     return (
         <KeyboardAvoidingView
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
+            behavior="padding"
+            keyboardVerticalOffset={0}
         >
             <View style={[styles.container, { paddingTop: insets.top }]}>
                 <StatusBar barStyle="dark-content" />

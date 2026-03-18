@@ -8,8 +8,8 @@ export const Input = ({
     icon,
     error,
     password,
-    onFocus = () => { },
-    onBlur = () => { },
+    onFocus,
+    onBlur,
     ...props
 }) => {
     const [isFocused, setIsFocused] = useState(false);
@@ -17,13 +17,18 @@ export const Input = ({
 
     const handleFocus = (e) => {
         setIsFocused(true);
-        onFocus(e);
+        onFocus?.(e);
     };
 
     const handleBlur = (e) => {
         setIsFocused(false);
-        onBlur(e);
+        onBlur?.(e);
     };
+
+    const inputStyle = [
+        styles.input,
+        { height: 54 }
+    ];
 
     return (
         <View style={styles.container}>
@@ -44,12 +49,13 @@ export const Input = ({
                 )}
 
                 <TextInput
-                    style={styles.input}
+                    style={inputStyle}
                     placeholderTextColor={COLORS.textLight}
                     cursorColor={COLORS.primary}
                     secureTextEntry={password && !isPasswordVisible}
                     onFocus={handleFocus}
                     onBlur={handleBlur}
+                    autoCapitalize="none"
                     {...props}
                 />
 
@@ -103,11 +109,6 @@ const styles = StyleSheet.create({
     inputWrapperFocused: {
         backgroundColor: COLORS.surface,
         borderColor: COLORS.primary,
-        shadowColor: COLORS.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        elevation: 2,
     },
     inputWrapperError: {
         backgroundColor: '#FEF2F2',
@@ -122,7 +123,7 @@ const styles = StyleSheet.create({
         color: COLORS.text,
         fontSize: 16,
         fontWeight: '500',
-        height: '100%',
+        paddingVertical: 0,
     },
     eyeIcon: {
         padding: 8,

@@ -134,7 +134,8 @@ export const ShopDetailScreen = ({ route, navigation }) => {
     return (
         <KeyboardAvoidingView 
             style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
+            behavior="padding"
+            keyboardVerticalOffset={0}
             keyboardShouldPersistTaps="handled"
         >
             <View style={styles.container}>

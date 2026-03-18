@@ -3,16 +3,32 @@ import { View, Text, Image, TouchableOpacity, StyleSheet, Platform } from 'react
 import { COLORS, RADIUS, SPACING, SHADOW } from '../theme';
 import { Ionicons as Icon } from '@expo/vector-icons';
 
-export const ShopCard = ({
-    shop,
-    onPress,
-    onFavoritePress // Callback khi bấm nút tim
-}) => {
-    // Giả lập dữ liệu nếu thiếu
+const isShopOpen = (openingTime, closingTime) => {
+    if (!openingTime || !closingTime) return true;
+
+    const now = new Date();
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const [openHour, openMinute] = openingTime.split(':').map(Number);
+    const [closeHour, closeMinute] = closingTime.split(':').map(Number);
+
+    const currentTotalMinutes = currentHour * 60 + currentMinute;
+    const openTotalMinutes = openHour * 60 + openMinute;
+    const closeTotalMinutes = closeHour * 60 + closeMinute;
+
+    if (closeTotalMinutes < openTotalMinutes) {
+        return currentTotalMinutes >= openTotalMinutes || currentTotalMinutes < closeTotalMinutes;
+    }
+
+    return currentTotalMinutes >= openTotalMinutes && currentTotalMinutes < closeTotalMinutes;
+};
+
+export const ShopCard = ({ shop, onPress }) => {
     const distance = shop.distance || '1.2 km';
-    const isOpen = shop.isOpen ?? true; // Mặc định là mở
+    const isOpen = isShopOpen(shop.openingTime, shop.closingTime);
     const rating = shop.rating || 4.8;
-    const reviewCount = shop.reviewCount || 120;
+    const reviewCount = shop.totalReviews ?? shop.reviewCount ?? 0;
 
     return (
         <TouchableOpacity
@@ -35,20 +51,16 @@ export const ShopCard = ({
                     <Text style={styles.reviewCount}>({reviewCount})</Text>
                 </View>
 
-                {/* Button: Favorite (Góc phải trên) */}
-                <TouchableOpacity
-                    style={styles.favoriteBtn}
-                    onPress={onFavoritePress}
-                    activeOpacity={0.7}
-                >
-                    <Icon name="heart-outline" size={20} color="#FFF" />
-                </TouchableOpacity>
-
-                {/* Badge: Status (Góc trái dưới của ảnh - Tùy chọn) */}
-                {isOpen && (
-                    <View style={styles.statusBadge}>
-                        <View style={styles.statusDot} />
-                        <Text style={styles.statusText}>Đang mở</Text>
+                {/* Badge: Status (Góc phải trên) - Đang mở / Đóng cửa */}
+                {isOpen ? (
+                    <View style={styles.statusBadgeOpen}>
+                        <View style={styles.statusDotOpen} />
+                        <Text style={styles.statusTextOpen}>Đang mở</Text>
+                    </View>
+                ) : (
+                    <View style={styles.statusBadgeClosed}>
+                        <View style={styles.statusDotClosed} />
+                        <Text style={styles.statusTextClosed}>Đóng cửa</Text>
                     </View>
                 )}
             </View>
@@ -56,7 +68,10 @@ export const ShopCard = ({
             {/* --- CONTENT SECTION --- */}
             <View style={styles.content}>
                 <View style={styles.headerRow}>
-                    <Text style={styles.name} numberOfLines={1}>{shop.name}</Text>
+                    <Text style={styles.name} numberOfLines={1}>
+                        {shop.name}
+                    </Text>
+
                     {/* Badge khoảng cách */}
                     <View style={styles.distanceBadge}>
                         <Icon name="navigate-outline" size={12} color={COLORS.primary} />
@@ -85,19 +100,18 @@ export const ShopCard = ({
 const styles = StyleSheet.create({
     card: {
         backgroundColor: COLORS.surface,
-        borderRadius: RADIUS.l, // Bo góc lớn (24px)
+        borderRadius: RADIUS.l,
         marginBottom: SPACING.m + 4,
-        ...SHADOW, // Bóng đổ từ theme
-        // Đảm bảo shadow hiện đẹp trên Android khi overflow hidden
+        ...SHADOW,
         borderWidth: 1,
         borderColor: COLORS.border || '#F3F4F6',
     },
     imageContainer: {
-        height: 180, // Ảnh cao hơn chút để immersive
+        height: 180,
         width: '100%',
         borderTopLeftRadius: RADIUS.l,
         borderTopRightRadius: RADIUS.l,
-        overflow: 'hidden', // Để cắt ảnh theo bo góc
+        overflow: 'hidden',
         position: 'relative',
     },
     image: {
@@ -105,14 +119,14 @@ const styles = StyleSheet.create({
         height: '100%',
     },
 
-    // --- FLOATING ELEMENTS ---
+    // --- FLOATING BADGES ---
     ratingBadge: {
         position: 'absolute',
         top: 12,
         left: 12,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.95)', // Nền trắng mờ
+        backgroundColor: 'rgba(255, 255, 255, 0.95)',
         paddingHorizontal: 8,
         paddingVertical: 4,
         borderRadius: RADIUS.s,
@@ -132,43 +146,56 @@ const styles = StyleSheet.create({
         color: COLORS.textLight,
         marginLeft: 2,
     },
-    favoriteBtn: {
+
+    statusBadgeOpen: {
         position: 'absolute',
         top: 12,
         right: 12,
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: 'rgba(0,0,0,0.3)', // Nền đen mờ
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    statusBadge: {
-        position: 'absolute',
-        bottom: 12,
-        left: 12,
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#ECFDF5', // Xanh lá rất nhạt
-        paddingHorizontal: 8,
-        paddingVertical: 4,
+        backgroundColor: 'rgba(16, 185, 129, 0.95)', // xanh lá
+        paddingHorizontal: 10,
+        paddingVertical: 5,
         borderRadius: RADIUS.s,
     },
-    statusDot: {
-        width: 6,
-        height: 6,
-        borderRadius: 3,
-        backgroundColor: COLORS.success || '#10B981',
+    statusDotOpen: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#10B981',
         marginRight: 6,
     },
-    statusText: {
-        fontSize: 10,
-        fontWeight: '700',
-        color: COLORS.success || '#10B981',
-        textTransform: 'uppercase',
+    statusTextOpen: {
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: '600',
     },
 
-    // --- CONTENT STYLES ---
+    statusBadgeClosed: {
+        position: 'absolute',
+        top: 12,
+        right: 12,
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: 'rgba(239, 68, 68, 0.95)', // đỏ
+        paddingHorizontal: 10,
+        paddingVertical: 5,
+        borderRadius: RADIUS.s,
+    },
+    statusDotClosed: {
+        width: 8,
+        height: 8,
+        borderRadius: 4,
+        backgroundColor: '#EF4444',
+        marginRight: 6,
+    },
+    statusTextClosed: {
+        color: '#fff',
+        fontSize: 12,
+        fontWeight: '600',
+    },
+
+    // --- CONTENT ---
     content: {
         padding: SPACING.m,
     },
@@ -202,7 +229,7 @@ const styles = StyleSheet.create({
     addressRow: {
         flexDirection: 'row',
         marginBottom: 8,
-        paddingRight: 16, // Tránh chữ tràn sát mép
+        paddingRight: 16,
     },
     address: {
         fontSize: 13,
@@ -213,6 +240,7 @@ const styles = StyleSheet.create({
     tagsRow: {
         flexDirection: 'row',
         alignItems: 'center',
+        flexWrap: 'wrap',
     },
     tagText: {
         fontSize: 12,
@@ -222,5 +250,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 6,
         paddingVertical: 2,
         borderRadius: 4,
-    }
+        marginBottom: 4,
+    },
 });

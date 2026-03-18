@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, KeyboardAvoidingView, Platform, Keyboard } from 'react-native';
 import { Formik } from 'formik';
 import * as Yup from 'yup';
 import { AuthContext } from '../context/AuthContext';
@@ -18,8 +18,9 @@ export const RegisterScreen = ({ navigation }) => {
 
     return (
         <KeyboardAvoidingView 
-            style={{ flex: 1 }}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
+            style={{ flex: 1, backgroundColor: COLORS.background }}
+            behavior="padding"
+            keyboardVerticalOffset={0}
         >
             <ScrollView 
                 contentContainerStyle={styles.scrollContent}
@@ -77,17 +78,10 @@ export const RegisterScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-    scrollContent: { flexGrow: 1 },
+    scrollContent: { flexGrow: 1, padding: SPACING.l, paddingTop: 100 },
     container: { 
-        flex: 1, 
+        flex: 1,
         backgroundColor: COLORS.background, 
-        padding: SPACING.l, 
-        justifyContent: 'center',
-        ...(Platform.OS === 'web' && {
-            height: '100vh',
-            maxHeight: '100vh',
-            overflow: 'hidden',
-        }),
     },
     title: { fontSize: 28, fontWeight: '800', color: COLORS.secondary },
     subtitle: { fontSize: 16, color: COLORS.textLight, marginTop: 8, marginBottom: SPACING.xl },

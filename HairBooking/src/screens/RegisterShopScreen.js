@@ -25,7 +25,8 @@ export const RegisterShopScreen = ({ navigation }) => {
         <View style={styles.container}>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'position'}
+                behavior="padding"
+                keyboardVerticalOffset={0}
             >
                 <ScrollView
                     style={{ flex: 1 }}

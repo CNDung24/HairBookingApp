@@ -73,13 +73,14 @@ export const ResetPasswordScreen = ({ route, navigation }) => {
 
     if (isResetMode) {
         return (
-            <KeyboardAvoidingView 
-                style={styles.container}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
-                <ScrollView contentContainerStyle={styles.scrollContent}>
-                    <View style={styles.header}>
-                        <Icon name="lock-closed" size={60} color={COLORS.primary} />
+        <KeyboardAvoidingView 
+            style={styles.container}
+            behavior="padding"
+            keyboardVerticalOffset={0}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <View style={styles.header}>
+                    <Icon name="lock-closed" size={60} color={COLORS.primary} />
                         <Text style={styles.title}>Đặt lại mật khẩu</Text>
                         <Text style={styles.subtitle}>Nhập mật khẩu mới của bạn</Text>
                     </View>
@@ -116,7 +117,8 @@ export const ResetPasswordScreen = ({ route, navigation }) => {
     return (
         <KeyboardAvoidingView 
             style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            behavior="padding"
+            keyboardVerticalOffset={0}
         >
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
