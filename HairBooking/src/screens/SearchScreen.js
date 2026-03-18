@@ -13,7 +13,6 @@ import { COLORS, SPACING, RADIUS, SHADOW } from '../theme';
 // Dữ liệu giả cho Filter Chips
 const FILTERS = [
     { id: 'all', label: 'Tất cả' },
-    { id: 'near', label: 'Gần tôi' },
     { id: 'rating', label: 'Đánh giá 4.5+' },
     { id: 'open', label: 'Đang mở' },
 ];
@@ -52,11 +51,36 @@ export const SearchScreen = ({ navigation }) => {
             );
         }
 
-        // 2. Lọc theo Chips (Logic giả định)
+        // 2. Lọc theo Chips
         if (activeFilter === 'rating') {
             result = result.filter(shop => (shop.rating || 0) >= 4.5);
         }
-        // Thêm logic cho 'near' và 'open' nếu có dữ liệu thực tế
+
+        // Lọc "Đang mở"
+        if (activeFilter === 'open') {
+            const isShopOpen = (shop) => {
+                if (!shop.openingTime || !shop.closingTime) return false;
+
+                const now = new Date();
+                const currentHour = now.getHours();
+                const currentMinute = now.getMinutes();
+
+                const [openHour, openMinute] = shop.openingTime.split(':').map(Number);
+                const [closeHour, closeMinute] = shop.closingTime.split(':').map(Number);
+
+                const currentTotalMinutes = currentHour * 60 + currentMinute;
+                const openTotalMinutes = openHour * 60 + openMinute;
+                const closeTotalMinutes = closeHour * 60 + closeMinute;
+
+                if (closeTotalMinutes < openTotalMinutes) {
+                    return currentTotalMinutes >= openTotalMinutes || currentTotalMinutes < closeTotalMinutes;
+                }
+
+                return currentTotalMinutes >= openTotalMinutes && currentTotalMinutes < closeTotalMinutes;
+            };
+
+            result = result.filter(shop => isShopOpen(shop));
+        }
 
         setFilteredShops(result);
     }, [searchQuery, shops, activeFilter]);
@@ -71,7 +95,7 @@ export const SearchScreen = ({ navigation }) => {
                 <Icon name="search" size={20} color={COLORS.textLight} style={styles.searchIcon} />
                 <TextInput
                     style={styles.searchInput}
-                    placeholder="Tìm salon, barber, dịch vụ..."
+                    placeholder="Tìm salon"
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                     placeholderTextColor={COLORS.textLight}

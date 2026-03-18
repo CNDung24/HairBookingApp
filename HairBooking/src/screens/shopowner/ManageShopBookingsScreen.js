@@ -164,7 +164,7 @@ export const ManageShopBookingsScreen = ({ navigation }) => {
                                 <Text style={styles.actionText}>Hoàn thành</Text>
                             </TouchableOpacity>
                         )}
-                        
+
                         {(item.status === 'done' || item.status === 'cancelled' || item.status === 'checked_in') && (
                             <Ionicons name="chevron-forward" size={18} color={COLORS.textLight} style={{ marginLeft: 8 }} />
                         )}
@@ -217,37 +217,37 @@ const styles = StyleSheet.create({
             overflow: 'hidden',
         }),
     },
-    filterRow: { 
-        flexDirection: 'row', 
-        paddingHorizontal: SPACING.m, 
-        paddingVertical: SPACING.s, 
+    filterRow: {
+        flexDirection: 'row',
+        paddingHorizontal: SPACING.m,
+        paddingVertical: SPACING.s,
         gap: SPACING.s,
         backgroundColor: COLORS.white,
         borderBottomWidth: 1,
         borderBottomColor: COLORS.border,
     },
-    filterBtn: { 
-        paddingHorizontal: 16, 
-        paddingVertical: 8, 
-        borderRadius: RADIUS.m, 
+    filterBtn: {
+        paddingHorizontal: 16,
+        paddingVertical: 8,
+        borderRadius: RADIUS.m,
         backgroundColor: '#F3F4F6',
         borderWidth: 1,
         borderColor: 'transparent',
     },
-    filterBtnActive: { 
+    filterBtnActive: {
         backgroundColor: COLORS.primary + '15',
         borderColor: COLORS.primary,
     },
     filterText: { fontSize: 13, color: COLORS.textLight, fontWeight: '600' },
     filterTextActive: { color: COLORS.primary },
-    
+
     list: { padding: SPACING.m, paddingBottom: 40 },
-    
+
     // Premium Card
-    card: { 
-        backgroundColor: COLORS.white, 
-        borderRadius: RADIUS.l, 
-        padding: SPACING.m, 
+    card: {
+        backgroundColor: COLORS.white,
+        borderRadius: RADIUS.l,
+        padding: SPACING.m,
         marginBottom: SPACING.m,
         borderWidth: 1,
         borderColor: '#F1F5F9',
@@ -257,38 +257,38 @@ const styles = StyleSheet.create({
             android: { elevation: 3 }
         })
     },
-    cardHeader: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
+    cardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: SPACING.m 
+        marginBottom: SPACING.m
     },
     timeSection: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     timeIcon: { width: 36, height: 36, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
     timeLabel: { fontSize: 16, fontWeight: '800', color: COLORS.title },
     dateLabel: { fontSize: 11, color: COLORS.textLight, marginTop: 2 },
-    
-    statusBadge: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        paddingHorizontal: 10, 
-        paddingVertical: 4, 
-        borderRadius: 20 
+
+    statusBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 20
     },
     statusDot: { width: 6, height: 6, borderRadius: 3, marginRight: 6 },
     statusText: { fontSize: 11, fontWeight: '700' },
-    
+
     divider: { height: 1, backgroundColor: '#F8FAFC', marginBottom: SPACING.m },
-    
+
     infoSection: { gap: 12, marginBottom: SPACING.m },
     infoRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
     infoLabelGroup: { flex: 1 },
     infoTextMain: { fontSize: 14, fontWeight: '700', color: COLORS.text },
     infoTextSub: { fontSize: 12, color: COLORS.textLight, marginTop: 2 },
-    
-    cardFooter: { 
-        flexDirection: 'row', 
-        justifyContent: 'space-between', 
+
+    cardFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
         alignItems: 'center',
         backgroundColor: '#F8FAFC',
         padding: 12,
@@ -298,7 +298,7 @@ const styles = StyleSheet.create({
     priceSection: { gap: 2 },
     priceLabel: { fontSize: 10, color: COLORS.textLight, textTransform: 'uppercase' },
     priceValue: { fontSize: 15, fontWeight: '800', color: COLORS.primary },
-    
+
     actions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
     miniActionBtn: {
         width: 36,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
     confirmBtn: { backgroundColor: COLORS.primary },
     completeBtn: { backgroundColor: COLORS.success },
     actionText: { fontSize: 13, fontWeight: '700', color: COLORS.white },
-    
+
     empty: { alignItems: 'center', justifyContent: 'center', paddingVertical: SPACING.xl * 2 },
     emptyText: { fontSize: 16, color: COLORS.textLight, marginTop: SPACING.m },
 });

@@ -1,8 +1,8 @@
 // src/screens/HomeScreen.js
-import React, { useContext, useState, useCallback } from 'react';
+import React, { useContext, useState, useCallback, useEffect, useRef } from 'react';
 import {
     View, Text, FlatList, StyleSheet, StatusBar, TouchableOpacity,
-    Image, ActivityIndicator, ScrollView, RefreshControl, useWindowDimensions, ImageBackground
+    Image, ActivityIndicator, ScrollView, RefreshControl, useWindowDimensions, ImageBackground, Animated
 } from 'react-native';
 import { useQuery } from '@tanstack/react-query';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -15,19 +15,66 @@ import { ShopCard } from '../components/ShopCard';
 import { COLORS, SPACING, RADIUS, SHADOWS } from '../theme';
 import { useResponsive } from '../hooks/useResponsive';
 
-const CATEGORIES = [
-    { id: '1', name: 'Tất cả', icon: 'grid-outline' },
-    { id: '2', name: 'Cắt tóc', icon: 'cut-outline' },
-    { id: '3', name: 'Gội đầu', icon: 'water-outline' },
-    { id: '4', name: 'Massage', icon: 'happy-outline' },
-];
-
 export const HomeScreen = () => {
     const navigation = useNavigation();
     const insets = useSafeAreaInsets();
+    const { width: screenWidth } = useWindowDimensions();
     const { user } = useContext(AuthContext);
     const [activeCategory, setActiveCategory] = useState('1');
     const { isWeb, isDesktop, isTablet, containerWidth } = useResponsive();
+    
+    // Banner state
+    const [banners, setBanners] = useState([]);
+    const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
+    const scrollX = useRef(new Animated.Value(0)).current;
+    const flatListRef = useRef(null);
+
+    // Tính chiều rộng banner
+    const bannerWidth = screenWidth - 2 * SPACING.l;
+
+    // Fetch banners
+    const { data: bannersData } = useQuery({
+        queryKey: ['banners'],
+        queryFn: async () => {
+            const res = await client.get('/banners');
+            return res.data;
+        },
+        staleTime: 5 * 60 * 1000,
+    });
+
+    useEffect(() => {
+        if (bannersData && bannersData.length > 0) {
+            setBanners(bannersData);
+        }
+    }, [bannersData]);
+
+    // Auto-rotate banner - chuyển mỗi 3 giây
+    useEffect(() => {
+        if (banners.length <= 1) return;
+
+        const interval = setInterval(() => {
+            setCurrentBannerIndex(prev => (prev + 1) % banners.length);
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, [banners.length]);
+
+    // Scroll to current banner when index changes
+    useEffect(() => {
+        if (banners.length > 1 && flatListRef.current) {
+            const timeout = setTimeout(() => {
+                try {
+                    flatListRef.current?.scrollTo({
+                        x: currentBannerIndex * bannerWidth,
+                        animated: true
+                    });
+                } catch (e) {
+                    // Ignore scroll errors
+                }
+            }, 100);
+            return () => clearTimeout(timeout);
+        }
+    }, [currentBannerIndex, bannerWidth, banners.length]);
 
     const { data: shops, isLoading, refetch, isRefetching } = useQuery({
         queryKey: ['shops'],
@@ -73,35 +120,95 @@ export const HomeScreen = () => {
                     onPress={() => navigation.navigate('Search')}
                 >
                     <Icon name="search-outline" size={20} color={COLORS.primary} />
-                    <Text style={styles.searchPlaceholder}>Tìm kiếm vị trí của bạn</Text>
+                    <Text style={styles.searchPlaceholder}>Tìm kiếm</Text>
                 </TouchableOpacity>
 
-                {/* Promo Banner */}
-                <View style={styles.bannerContainer}>
-                    <View style={styles.bannerContent}>
-                        <ImageBackground
-                            source={{ uri: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=600&auto=format&fit=crop' }}
-                            style={styles.bannerImage}
-                            imageStyle={{ borderRadius: RADIUS.l }}
-                        >
-                            <View style={styles.bannerOverlay}>
-                                <Text style={styles.bannerTitle}>REFRESH</Text>
-                                <Text style={styles.bannerTitleHighlight}>YOUR STYLE</Text>
-                                <Text style={styles.bannerSubtitle}>AND RENEW YOUR LOOK</Text>
-
-                                <View style={{ flex: 1, justifyContent: 'flex-end', paddingBottom: 10 }}>
-                                    <Text style={styles.bannerSmallText}>BOOK NOW AND GET 10% OFF</Text>
-                                    <Text style={styles.bannerSmallText}>ON YOUR FIRST HAIRCUT!</Text>
-                                </View>
+                {/* Promo Banner - Auto Slide */}
+                <View style={[styles.bannerContainer, { width: containerWidth }]}>
+                    {banners.length > 0 ? (
+                        <>
+                            <ScrollView
+                                ref={flatListRef}
+                                horizontal
+                                pagingEnabled
+                                showsHorizontalScrollIndicator={false}
+                                onScroll={Animated.event(
+                                    [{ nativeEvent: { contentOffset: { x: scrollX } } }],
+                                    { useNativeDriver: true }
+                                )}
+                                scrollEventThrottle={16}
+                                onMomentumScrollEnd={(event) => {
+                                    const slideSize = event.nativeEvent.layoutMeasurement.width;
+                                    const index = event.nativeEvent.contentOffset.x / slideSize;
+                                    const roundIndex = Math.round(index);
+                                    setCurrentBannerIndex(roundIndex);
+                                }}
+                            >
+                                {banners.map((item, index) => (
+                                    <View key={item.id} style={[styles.bannerContent, { width: bannerWidth }]}>
+                                        <ImageBackground
+                                            source={{ uri: item.image }}
+                                            style={styles.bannerImage}
+                                            imageStyle={{ borderRadius: RADIUS.l }}
+                                        >
+                                            <View style={styles.bannerOverlay}>
+                                                {item.title && (
+                                                    <>
+                                                        <Text style={styles.bannerTitle}>{item.title}</Text>
+                                                        {item.description && (
+                                                            <Text style={styles.bannerSubtitle}>{item.description}</Text>
+                                                        )}
+                                                    </>
+                                                )}
+                                                {!item.title && (
+                                                    <>
+                                                        <Text style={styles.bannerTitle}>REFRESH</Text>
+                                                        <Text style={styles.bannerTitleHighlight}>YOUR STYLE</Text>
+                                                        <Text style={styles.bannerSubtitle}>AND RENEW YOUR LOOK</Text>
+                                                    </>
+                                                )}
+                                            </View>
+                                        </ImageBackground>
+                                    </View>
+                                ))}
+                            </ScrollView>
+                            {/* Pagination dots */}
+                            <View style={styles.pagination}>
+                                {banners.map((_, index) => {
+                                    const inputRange = [(index - 1) * 100, index * 100, (index + 1) * 100];
+                                    const scale = scrollX.interpolate({
+                                        inputRange,
+                                        outputRange: [1, 1.5, 1],
+                                        extrapolate: 'clamp',
+                                    });
+                                    return (
+                                        <Animated.View
+                                            key={index}
+                                            style={[
+                                                styles.dot,
+                                                { backgroundColor: currentBannerIndex === index ? COLORS.primary : '#D1D5DB', transform: [{ scale }] }
+                                            ]}
+                                        />
+                                    );
+                                })}
                             </View>
-                        </ImageBackground>
-                    </View>
-                    {/* Pagination dots under banner */}
-                    <View style={styles.pagination}>
-                        <View style={[styles.dot, styles.dotActive]} />
-                        <View style={styles.dot} />
-                        <View style={styles.dot} />
-                    </View>
+                        </>
+                    ) : (
+                        // Fallback banner when no banners in DB
+                        <View style={styles.bannerContent}>
+                            <ImageBackground
+                                source={{ uri: 'https://images.unsplash.com/photo-1599351431202-1e0f0137899a?q=80&w=600&auto=format&fit=crop' }}
+                                style={styles.bannerImage}
+                                imageStyle={{ borderRadius: RADIUS.l }}
+                            >
+                                <View style={styles.bannerOverlay}>
+                                    <Text style={styles.bannerTitle}>REFRESH</Text>
+                                    <Text style={styles.bannerTitleHighlight}>YOUR STYLE</Text>
+                                    <Text style={styles.bannerSubtitle}>AND RENEW YOUR LOOK</Text>
+                                </View>
+                            </ImageBackground>
+                        </View>
+                    )}
                 </View>
 
                 {/* Categories - slightly restyled to match new colors */}
@@ -110,25 +217,6 @@ export const HomeScreen = () => {
                     showsHorizontalScrollIndicator={false}
                     contentContainerStyle={styles.categoryList}
                 >
-                    {CATEGORIES.map((cat) => {
-                        const isActive = activeCategory === cat.id;
-                        return (
-                            <TouchableOpacity
-                                key={cat.id}
-                                style={[styles.categoryItem, isActive && styles.categoryItemActive]}
-                                onPress={() => setActiveCategory(cat.id)}
-                            >
-                                <Icon
-                                    name={cat.icon}
-                                    size={18}
-                                    color={isActive ? '#FFF' : COLORS.textLight}
-                                />
-                                <Text style={[styles.categoryText, isActive && styles.categoryTextActive]}>
-                                    {cat.name}
-                                </Text>
-                            </TouchableOpacity>
-                        );
-                    })}
                 </ScrollView>
 
                 {/* Section Title */}
@@ -286,8 +374,9 @@ const styles = StyleSheet.create({
     searchPlaceholder: { flex: 1, marginLeft: 12, color: COLORS.textLight, fontSize: 15 },
 
     // Banner
-    bannerContainer: { paddingHorizontal: SPACING.l, marginBottom: SPACING.m },
+    bannerContainer: { marginHorizontal: SPACING.l, marginBottom: SPACING.m },
     bannerContent: {
+        width: '100%',
         borderRadius: RADIUS.l,
         overflow: 'hidden',
         height: 180,
@@ -314,8 +403,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 12,
     },
-    dot: { width: 6, height: 6, borderRadius: 3, backgroundColor: '#D1D5DB', marginHorizontal: 4 },
-    dotActive: { backgroundColor: COLORS.primary },
+    dot: { width: 8, height: 8, borderRadius: 4, marginHorizontal: 4, backgroundColor: '#D1D5DB' },
 
     // Categories
     categoryList: { paddingHorizontal: SPACING.l, paddingBottom: SPACING.l },

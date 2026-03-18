@@ -25,7 +25,6 @@ const isShopOpen = (openingTime, closingTime) => {
 };
 
 export const ShopCard = ({ shop, onPress }) => {
-    const distance = shop.distance || '1.2 km';
     const isOpen = isShopOpen(shop.openingTime, shop.closingTime);
     const rating = shop.rating || 4.8;
     const reviewCount = shop.totalReviews ?? shop.reviewCount ?? 0;
@@ -44,14 +43,14 @@ export const ShopCard = ({ shop, onPress }) => {
                     resizeMode="cover"
                 />
 
-                {/* Badge: Rating (Góc trái trên) */}
+                {/* Badge: Rating (Góc phải trên) */}
                 <View style={styles.ratingBadge}>
                     <Icon name="star" size={12} color={COLORS.primary} />
                     <Text style={styles.ratingText}>{rating}</Text>
                     <Text style={styles.reviewCount}>({reviewCount})</Text>
                 </View>
 
-                {/* Badge: Status (Góc phải trên) - Đang mở / Đóng cửa */}
+                {/* Badge: Status - Đang mở / Đóng cửa */}
                 {isOpen ? (
                     <View style={styles.statusBadgeOpen}>
                         <View style={styles.statusDotOpen} />
@@ -71,12 +70,6 @@ export const ShopCard = ({ shop, onPress }) => {
                     <Text style={styles.name} numberOfLines={1}>
                         {shop.name}
                     </Text>
-
-                    {/* Badge khoảng cách */}
-                    <View style={styles.distanceBadge}>
-                        <Icon name="navigate-outline" size={12} color={COLORS.primary} />
-                        <Text style={styles.distanceText}>{distance}</Text>
-                    </View>
                 </View>
 
                 <View style={styles.addressRow}>
@@ -84,13 +77,6 @@ export const ShopCard = ({ shop, onPress }) => {
                     <Text style={styles.address} numberOfLines={2}>
                         {shop.address || 'Chưa cập nhật địa chỉ'}
                     </Text>
-                </View>
-
-                {/* Tags (Dịch vụ nổi bật) */}
-                <View style={styles.tagsRow}>
-                    {['Cắt tóc', 'Gội đầu', 'Massage'].map((tag, index) => (
-                        <Text key={index} style={styles.tagText}>• {tag}</Text>
-                    ))}
                 </View>
             </View>
         </TouchableOpacity>

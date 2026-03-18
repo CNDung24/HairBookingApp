@@ -9,6 +9,7 @@ import { ManageShopRequestsScreen } from '../screens/admin/ManageShopRequestsScr
 import { ManageUsersScreen } from '../screens/admin/ManageUsersScreen';
 import { ManageShopsScreen } from '../screens/admin/ManageShopsScreen';
 import { ManageBookingsScreen } from '../screens/admin/ManageBookingsScreen';
+import { ManageBannersScreen } from '../screens/admin/ManageBannersScreen';
 import { ProfileScreen } from '../screens/ProfileScreen';
 import { ChangePasswordScreen } from '../screens/customer/ChangePasswordScreen';
 import { NotificationScreen } from '../screens/NotificationScreen';
@@ -100,6 +101,11 @@ export const AdminNavigator = () => {
                 name="ManageBookings"
                 component={ManageBookingsScreen}
                 options={{ headerShown: true, title: 'Quản lý lịch hẹn', path: 'admin/manage-bookings' }}
+            />
+            <Stack.Screen
+                name="ManageBanners"
+                component={ManageBannersScreen}
+                options={{ headerShown: false, title: 'Quản lý Banner', path: 'admin/manage-banners' }}
             />
             <Stack.Screen
                 name="ChangePassword"

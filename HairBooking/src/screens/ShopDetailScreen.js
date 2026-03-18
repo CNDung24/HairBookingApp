@@ -223,10 +223,6 @@ export const ShopDetailScreen = ({ route, navigation }) => {
                                     <Icon name="time-outline" size={18} color="#B68B63" />
                                     <Text style={styles.metaText}>{shop?.openingTime || '09:00'} - {shop?.closingTime || '21:00'}</Text>
                                 </View>
-                                <View style={styles.metaItem}>
-                                    <Icon name="navigate-outline" size={18} color="#B68B63" />
-                                    <Text style={styles.distanceText}>{shop?.distance || '1.2'} km</Text>
-                                </View>
                             </View>
                         </View>
                     </View>
@@ -624,12 +620,7 @@ const styles = StyleSheet.create({
         marginLeft: 8,
         fontWeight: '500',
     },
-    distanceText: {
-        color: '#333',
-        fontSize: 14,
-        fontWeight: '500',
-        marginLeft: 8,
-    },
+
 
     searchContainer: {
         paddingHorizontal: SPACING.l,

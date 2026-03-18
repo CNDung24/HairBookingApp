@@ -116,6 +116,13 @@ export const AdminDashboardScreen = ({ navigation }) => {
                             icon="checkmark-circle-outline"
                             onPress={() => navigation.navigate('ManageShopRequests')}
                         />
+                        <View style={styles.divider} />
+                        <ActionItem
+                            label="Quản lý Banner"
+                            subLabel="Thêm, xóa banner trang chủ"
+                            icon="images-outline"
+                            onPress={() => navigation.navigate('ManageBanners')}
+                        />
                     </View>
                 </View>
             </ScrollView>
