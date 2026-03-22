@@ -132,7 +132,7 @@ export const ShopDetailScreen = ({ route, navigation }) => {
     );
 
     return (
-        <KeyboardAvoidingView 
+        <KeyboardAvoidingView
             style={{ flex: 1 }}
             behavior="padding"
             keyboardVerticalOffset={0}
@@ -156,306 +156,306 @@ export const ShopDetailScreen = ({ route, navigation }) => {
                     </Animated.View>
                 )}
 
-                <ScrollView
+                <Animated.ScrollView
                     style={styles.scrollView}
                     contentContainerStyle={styles.scrollContent}
                     showsVerticalScrollIndicator={false}
                     keyboardShouldPersistTaps="handled"
                     onScroll={Animated.event(
-                    [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                    { useNativeDriver: false }
-                )}
-                scrollEventThrottle={16}
-            >
-                <View style={styles.headerSection}>
-                    <View style={styles.imageContainer}>
-                        <Image
-                            source={{ uri: shop?.image || 'https://via.placeholder.com/500' }}
-                            style={styles.shopImage}
-                            resizeMode="cover"
-                        />
-                        <View style={styles.imageOverlayDark} />
-                        <View style={styles.imageOverlay}>
-                            <TouchableOpacity
-                                style={styles.backButton}
-                                onPress={() => navigation.goBack()}
-                            >
-                                <Icon name="arrow-back" size={24} color="#FFF" />
-                            </TouchableOpacity>
-                            <View style={styles.topActions}>
-                                <TouchableOpacity style={styles.actionBtn}>
-                                    <Icon name="share-social-outline" size={20} color="#FFF" />
-                                </TouchableOpacity>
-                                <TouchableOpacity style={styles.actionBtn}>
-                                    <Icon name="heart-outline" size={20} color="#FFF" />
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-
-                        {/* Header curves matching home screen style */}
-                        <View style={styles.imageCurveBottom} />
-                    </View>
-
-                    <View style={styles.infoSection}>
-                        <View style={styles.nameRow}>
-                            <View style={{ flex: 1 }}>
-                                <Text style={styles.shopName}>{shop?.name}</Text>
-                            </View>
-                            <View style={styles.ratingBadge}>
-                                <Icon name="star" size={14} color="#B68B63" />
-                                <Text style={styles.ratingText}>{shop?.rating}</Text>
-                                <Text style={styles.reviewCount}>({shop?.totalReviews || 156} đánh giá)</Text>
-                            </View>
-                        </View>
-                        {shop?.description ? (
-                            <Text style={styles.descriptionText}>{shop.description}</Text>
-                        ) : (
-                            <Text style={styles.descriptionText}>Tiệm cắt tóc nam cao cấp với không gian hiện đại</Text>
-                        )}
-                        <View style={styles.metaRowContainer}>
-                            <View style={styles.addressRow}>
-                                <Icon name="location-sharp" size={18} color="#B68B63" />
-                                <Text style={styles.addressText}>{shop?.address}</Text>
-                            </View>
-                            <View style={styles.divider} />
-                            <View style={styles.metaRow}>
-                                <View style={styles.metaItem}>
-                                    <Icon name="time-outline" size={18} color="#B68B63" />
-                                    <Text style={styles.metaText}>{shop?.openingTime || '09:00'} - {shop?.closingTime || '21:00'}</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </View>
-                </View>
-
-                <View style={styles.searchContainer}>
-                    <View style={styles.searchBar}>
-                        <Icon name="search-outline" size={20} color={COLORS.title} />
-                        <TextInput
-                            style={styles.searchInput}
-                            placeholder="Tìm dịch vụ, thợ..."
-                            placeholderTextColor={COLORS.textLight}
-                            value={searchQuery}
-                            onChangeText={setSearchQuery}
-                        />
-                    </View>
-                </View>
-
-                <View style={styles.section}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Dịch vụ</Text>
-                    </View>
-                </View>
-
-                <View style={styles.section}>
-                    <View style={styles.sectionHeader}>
-                        {barbers?.length > 5 && (
-                            <TouchableOpacity onPress={() => setShowAllStylists(true)}>
-                                <Text style={styles.seeAll}>Xem tất cả ({barbers.length})</Text>
-                            </TouchableOpacity>
-                        )}
-                    </View>
-                    <ScrollView
-                        horizontal
-                        showsHorizontalScrollIndicator={false}
-                        contentContainerStyle={styles.barberScrollContent}
-                    >
-                        {displayedBarbers?.length > 0 ? displayedBarbers.map((barber, index) => {
-                            const isSelected = selectedBarber?.id === barber.id;
-                            return (
+                        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+                        { useNativeDriver: false }
+                    )}
+                    scrollEventThrottle={16}
+                >
+                    <View style={styles.headerSection}>
+                        <View style={styles.imageContainer}>
+                            <Image
+                                source={{ uri: shop?.image || 'https://via.placeholder.com/500' }}
+                                style={styles.shopImage}
+                                resizeMode="cover"
+                            />
+                            <View style={styles.imageOverlayDark} />
+                            <View style={styles.imageOverlay}>
                                 <TouchableOpacity
-                                    key={barber.id || index}
-                                    style={[styles.barberCard, isSelected && styles.barberCardSelected]}
-                                    onPress={() => setSelectedBarber(barber)}
+                                    style={styles.backButton}
+                                    onPress={() => navigation.goBack()}
                                 >
-                                    <View style={styles.barberAvatarContainer}>
-                                        <Image
-                                            source={{ uri: barber.avatar || 'https://i.pravatar.cc/150' }}
-                                            style={styles.barberAvatar}
-                                        />
-                                        {isSelected && (
-                                            <View style={styles.barberSelectedBadge}>
-                                                <Icon name="checkmark" size={12} color="#FFF" />
-                                            </View>
-                                        )}
-                                    </View>
-                                    <Text style={styles.barberName} numberOfLines={1}>{barber.name}</Text>
-                                    <View style={styles.barberRating}>
-                                        <Icon name="star" size={10} color={COLORS.primary} />
-                                        <Text style={styles.barberRatingText}>{barber.rating}</Text>
-                                    </View>
+                                    <Icon name="arrow-back" size={24} color="#FFF" />
                                 </TouchableOpacity>
-                            );
-                        }) : (
-                            <Text style={styles.emptyText}>Chưa có stylist</Text>
-                        )}
-                    </ScrollView>
-                </View>
-
-                <View style={styles.section}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Danh sách dịch vụ</Text>
-                    </View>
-                </View>
-
-                <View style={styles.servicesList}>
-                    {filteredServices?.length > 0 ? (
-                        filteredServices.map((service) => (
-                            <View key={service.id}>
-                                {renderService({ item: service })}
-                            </View>
-                        ))
-                    ) : (
-                        <Text style={styles.emptyText}>Chưa có dịch vụ</Text>
-                    )}
-                </View>
-
-                <View style={styles.reviewSection}>
-                    <View style={styles.sectionHeader}>
-                        <Text style={styles.sectionTitle}>Đánh giá</Text>
-                        <Text style={styles.seeAll}>Xem tất cả</Text>
-                    </View>
-                    {reviews?.length > 0 ? (
-                        <View style={styles.reviewCard}>
-                            {reviews.slice(0, 3).map((review, index) => (
-                                <View key={review.id || index} style={[styles.reviewItem, index > 0 && styles.reviewItemBorder]}>
-                                    <View style={styles.reviewHeader}>
-                                        <Image
-                                            source={{ uri: review.User?.avatar || 'https://i.pravatar.cc/150' }}
-                                            style={styles.reviewAvatar}
-                                        />
-                                        <View style={styles.reviewInfo}>
-                                            <Text style={styles.reviewUserName}>{review.User?.name || 'Khách hàng'}</Text>
-                                            <View style={styles.reviewStars}>
-                                                {[1, 2, 3, 4, 5].map((star) => (
-                                                    <Icon
-                                                        key={star}
-                                                        name={star <= review.rating ? 'star' : 'star-outline'}
-                                                        size={12}
-                                                        color={COLORS.primary}
-                                                    />
-                                                ))}
-                                            </View>
-                                        </View>
-                                        <Text style={styles.reviewDate}>
-                                            {review.createdAt ? new Date(review.createdAt).toLocaleDateString('vi-VN') : ''}
-                                        </Text>
-                                    </View>
-                                    {review.comment && (
-                                        <Text style={styles.reviewComment}>{review.comment}</Text>
-                                    )}
-                                    {review.reply && (
-                                        <View style={styles.replyContainer}>
-                                            <View style={styles.replyHeader}>
-                                                <Icon name="storefront-outline" size={12} color={COLORS.primary} />
-                                                <Text style={styles.replyLabel}> Phản hồi:</Text>
-                                            </View>
-                                            <Text style={styles.replyText}>{review.reply}</Text>
-                                        </View>
-                                    )}
+                                <View style={styles.topActions}>
+                                    <TouchableOpacity style={styles.actionBtn}>
+                                        <Icon name="share-social-outline" size={20} color="#FFF" />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.actionBtn}>
+                                        <Icon name="heart-outline" size={20} color="#FFF" />
+                                    </TouchableOpacity>
                                 </View>
-                            ))}
-                        </View>
-                    ) : (
-                        <Text style={styles.emptyText}>Chưa có đánh giá</Text>
-                    )}
-                </View>
+                            </View>
 
-                <View style={styles.infoDetailSection}>
-                    <Text style={styles.sectionTitle}>Thông tin</Text>
-                    <View style={styles.infoCard}>
-                        <View style={styles.infoRow}>
-                            <Icon name="time-outline" size={20} color={COLORS.primary} />
-                            <View style={styles.infoContent}>
-                                <Text style={styles.infoLabel}>Giờ mở cửa</Text>
-                                <Text style={styles.infoValue}>{shop?.openingTime || '09:00'} - {shop?.closingTime || '21:00'}</Text>
-                            </View>
+                            {/* Header curves matching home screen style */}
+                            <View style={styles.imageCurveBottom} />
                         </View>
-                        <View style={styles.infoDivider} />
-                        <View style={styles.infoRow}>
-                            <Icon name="location-outline" size={20} color={COLORS.primary} />
-                            <View style={styles.infoContent}>
-                                <Text style={styles.infoLabel}>Địa chỉ</Text>
-                                <Text style={styles.infoValue}>{shop?.address}</Text>
+
+                        <View style={styles.infoSection}>
+                            <View style={styles.nameRow}>
+                                <View style={{ flex: 1 }}>
+                                    <Text style={styles.shopName}>{shop?.name}</Text>
+                                </View>
+                                <View style={styles.ratingBadge}>
+                                    <Icon name="star" size={14} color="#B68B63" />
+                                    <Text style={styles.ratingText}>{shop?.rating}</Text>
+                                    <Text style={styles.reviewCount}>({shop?.totalReviews || 156} đánh giá)</Text>
+                                </View>
                             </View>
-                        </View>
-                        <View style={styles.infoDivider} />
-                        <View style={styles.infoRow}>
-                            <Icon name="call-outline" size={20} color={COLORS.primary} />
-                            <View style={styles.infoContent}>
-                                <Text style={styles.infoLabel}>Liên hệ</Text>
-                                <Text style={styles.infoValue}>{shop?.phone || 'Chưa cập nhật'}</Text>
+                            {shop?.description ? (
+                                <Text style={styles.descriptionText}>{shop.description}</Text>
+                            ) : (
+                                <Text style={styles.descriptionText}>Tiệm cắt tóc nam cao cấp với không gian hiện đại</Text>
+                            )}
+                            <View style={styles.metaRowContainer}>
+                                <View style={styles.addressRow}>
+                                    <Icon name="location-sharp" size={18} color="#B68B63" />
+                                    <Text style={styles.addressText}>{shop?.address}</Text>
+                                </View>
+                                <View style={styles.divider} />
+                                <View style={styles.metaRow}>
+                                    <View style={styles.metaItem}>
+                                        <Icon name="time-outline" size={18} color="#B68B63" />
+                                        <Text style={styles.metaText}>{shop?.openingTime || '09:00'} - {shop?.closingTime || '21:00'}</Text>
+                                    </View>
+                                </View>
                             </View>
                         </View>
                     </View>
-                </View>
-            </ScrollView>
 
-            <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 12 }]}>
-                <View style={styles.bottomBarContent}>
-                    <View style={styles.priceInfo}>
-                        <Text style={styles.priceLabel}>
-                            Tổng cộng
-                            {selectedBarber && <Text style={styles.barberLabel}> • {selectedBarber.name}</Text>}
-                        </Text>
-                        <Text style={styles.priceValue}>
-                            {selectedService
-                                ? (selectedService.discountPrice || selectedService.price || 0).toLocaleString()
-                                : 0}
-                            <Text style={styles.priceUnit}> vnđ</Text>
-                        </Text>
-                    </View>
-                    <Button
-                        title={user ? "Đặt Lịch Ngay" : "Đăng nhập để đặt"}
-                        disabled={!selectedService}
-                        onPress={handleBookPress}
-                        style={styles.bookButton}
-                    />
-                </View>
-            </View>
-
-            <Modal visible={showAllStylists} animationType="slide" transparent keyboardShouldPersistTaps="handled">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <View style={styles.modalHeader}>
-                            <Text style={styles.modalTitle}>Danh sách Stylist</Text>
-                            <TouchableOpacity onPress={() => setShowAllStylists(false)}>
-                                <Icon name="close" size={24} color={COLORS.title} />
-                            </TouchableOpacity>
+                    <View style={styles.searchContainer}>
+                        <View style={styles.searchBar}>
+                            <Icon name="search-outline" size={20} color={COLORS.title} />
+                            <TextInput
+                                style={styles.searchInput}
+                                placeholder="Tìm dịch vụ, thợ..."
+                                placeholderTextColor={COLORS.textLight}
+                                value={searchQuery}
+                                onChangeText={setSearchQuery}
+                            />
                         </View>
-                        <ScrollView style={styles.modalScroll}>
-                            {barbers?.map((barber) => {
+                    </View>
+
+                    <View style={styles.section}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Dịch vụ</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.section}>
+                        <View style={styles.sectionHeader}>
+                            {barbers?.length > 5 && (
+                                <TouchableOpacity onPress={() => setShowAllStylists(true)}>
+                                    <Text style={styles.seeAll}>Xem tất cả ({barbers.length})</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
+                        <ScrollView
+                            horizontal
+                            showsHorizontalScrollIndicator={false}
+                            contentContainerStyle={styles.barberScrollContent}
+                        >
+                            {displayedBarbers?.length > 0 ? displayedBarbers.map((barber, index) => {
                                 const isSelected = selectedBarber?.id === barber.id;
                                 return (
                                     <TouchableOpacity
-                                        key={barber.id}
-                                        style={[styles.modalBarberItem, isSelected && styles.modalBarberItemSelected]}
-                                        onPress={() => handleBarberSelect(barber)}
+                                        key={barber.id || index}
+                                        style={[styles.barberCard, isSelected && styles.barberCardSelected]}
+                                        onPress={() => setSelectedBarber(barber)}
                                     >
-                                        <Image
-                                            source={{ uri: barber.avatar || 'https://i.pravatar.cc/150' }}
-                                            style={styles.modalBarberAvatar}
-                                        />
-                                        <View style={styles.modalBarberInfo}>
-                                            <Text style={styles.modalBarberName}>{barber.name}</Text>
-                                            <Text style={styles.modalBarberSpecialty}>{barber.specialty || 'Stylist'}</Text>
-                                            <View style={styles.modalBarberRating}>
-                                                <Icon name="star" size={12} color={COLORS.primary} />
-                                                <Text style={styles.modalBarberRatingText}>{barber.rating}</Text>
-                                                <Text style={styles.modalBarberReviews}> • {barber.totalReviews || 0} đánh giá</Text>
-                                            </View>
+                                        <View style={styles.barberAvatarContainer}>
+                                            <Image
+                                                source={{ uri: barber.avatar || 'https://i.pravatar.cc/150' }}
+                                                style={styles.barberAvatar}
+                                            />
+                                            {isSelected && (
+                                                <View style={styles.barberSelectedBadge}>
+                                                    <Icon name="checkmark" size={12} color="#FFF" />
+                                                </View>
+                                            )}
                                         </View>
-                                        {isSelected && (
-                                            <Icon name="checkmark-circle" size={24} color={COLORS.primary} />
-                                        )}
+                                        <Text style={styles.barberName} numberOfLines={1}>{barber.name}</Text>
+                                        <View style={styles.barberRating}>
+                                            <Icon name="star" size={10} color={COLORS.primary} />
+                                            <Text style={styles.barberRatingText}>{barber.rating}</Text>
+                                        </View>
                                     </TouchableOpacity>
                                 );
-                            })}
+                            }) : (
+                                <Text style={styles.emptyText}>Chưa có stylist</Text>
+                            )}
                         </ScrollView>
                     </View>
+
+                    <View style={styles.section}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Danh sách dịch vụ</Text>
+                        </View>
+                    </View>
+
+                    <View style={styles.servicesList}>
+                        {filteredServices?.length > 0 ? (
+                            filteredServices.map((service) => (
+                                <View key={service.id}>
+                                    {renderService({ item: service })}
+                                </View>
+                            ))
+                        ) : (
+                            <Text style={styles.emptyText}>Chưa có dịch vụ</Text>
+                        )}
+                    </View>
+
+                    <View style={styles.reviewSection}>
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>Đánh giá</Text>
+                            <Text style={styles.seeAll}>Xem tất cả</Text>
+                        </View>
+                        {reviews?.length > 0 ? (
+                            <View style={styles.reviewCard}>
+                                {reviews.slice(0, 3).map((review, index) => (
+                                    <View key={review.id || index} style={[styles.reviewItem, index > 0 && styles.reviewItemBorder]}>
+                                        <View style={styles.reviewHeader}>
+                                            <Image
+                                                source={{ uri: review.User?.avatar || 'https://i.pravatar.cc/150' }}
+                                                style={styles.reviewAvatar}
+                                            />
+                                            <View style={styles.reviewInfo}>
+                                                <Text style={styles.reviewUserName}>{review.User?.name || 'Khách hàng'}</Text>
+                                                <View style={styles.reviewStars}>
+                                                    {[1, 2, 3, 4, 5].map((star) => (
+                                                        <Icon
+                                                            key={star}
+                                                            name={star <= review.rating ? 'star' : 'star-outline'}
+                                                            size={12}
+                                                            color={COLORS.primary}
+                                                        />
+                                                    ))}
+                                                </View>
+                                            </View>
+                                            <Text style={styles.reviewDate}>
+                                                {review.createdAt ? new Date(review.createdAt).toLocaleDateString('vi-VN') : ''}
+                                            </Text>
+                                        </View>
+                                        {review.comment && (
+                                            <Text style={styles.reviewComment}>{review.comment}</Text>
+                                        )}
+                                        {review.reply && (
+                                            <View style={styles.replyContainer}>
+                                                <View style={styles.replyHeader}>
+                                                    <Icon name="storefront-outline" size={12} color={COLORS.primary} />
+                                                    <Text style={styles.replyLabel}> Phản hồi:</Text>
+                                                </View>
+                                                <Text style={styles.replyText}>{review.reply}</Text>
+                                            </View>
+                                        )}
+                                    </View>
+                                ))}
+                            </View>
+                        ) : (
+                            <Text style={styles.emptyText}>Chưa có đánh giá</Text>
+                        )}
+                    </View>
+
+                    <View style={styles.infoDetailSection}>
+                        <Text style={styles.sectionTitle}>Thông tin</Text>
+                        <View style={styles.infoCard}>
+                            <View style={styles.infoRow}>
+                                <Icon name="time-outline" size={20} color={COLORS.primary} />
+                                <View style={styles.infoContent}>
+                                    <Text style={styles.infoLabel}>Giờ mở cửa</Text>
+                                    <Text style={styles.infoValue}>{shop?.openingTime || '09:00'} - {shop?.closingTime || '21:00'}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.infoDivider} />
+                            <View style={styles.infoRow}>
+                                <Icon name="location-outline" size={20} color={COLORS.primary} />
+                                <View style={styles.infoContent}>
+                                    <Text style={styles.infoLabel}>Địa chỉ</Text>
+                                    <Text style={styles.infoValue}>{shop?.address}</Text>
+                                </View>
+                            </View>
+                            <View style={styles.infoDivider} />
+                            <View style={styles.infoRow}>
+                                <Icon name="call-outline" size={20} color={COLORS.primary} />
+                                <View style={styles.infoContent}>
+                                    <Text style={styles.infoLabel}>Liên hệ</Text>
+                                    <Text style={styles.infoValue}>{shop?.phone || 'Chưa cập nhật'}</Text>
+                                </View>
+                            </View>
+                        </View>
+                    </View>
+                </Animated.ScrollView>
+
+                <View style={[styles.bottomBar, { paddingBottom: insets.bottom + 12 }]}>
+                    <View style={styles.bottomBarContent}>
+                        <View style={styles.priceInfo}>
+                            <Text style={styles.priceLabel}>
+                                Tổng cộng
+                                {selectedBarber && <Text style={styles.barberLabel}> • {selectedBarber.name}</Text>}
+                            </Text>
+                            <Text style={styles.priceValue}>
+                                {selectedService
+                                    ? (selectedService.discountPrice || selectedService.price || 0).toLocaleString()
+                                    : 0}
+                                <Text style={styles.priceUnit}> vnđ</Text>
+                            </Text>
+                        </View>
+                        <Button
+                            title={user ? "Đặt Lịch Ngay" : "Đăng nhập để đặt"}
+                            disabled={!selectedService}
+                            onPress={handleBookPress}
+                            style={styles.bookButton}
+                        />
+                    </View>
                 </View>
-            </Modal>
-        </View>
+
+                <Modal visible={showAllStylists} animationType="slide" transparent keyboardShouldPersistTaps="handled">
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContent}>
+                            <View style={styles.modalHeader}>
+                                <Text style={styles.modalTitle}>Danh sách Stylist</Text>
+                                <TouchableOpacity onPress={() => setShowAllStylists(false)}>
+                                    <Icon name="close" size={24} color={COLORS.title} />
+                                </TouchableOpacity>
+                            </View>
+                            <ScrollView style={styles.modalScroll}>
+                                {barbers?.map((barber) => {
+                                    const isSelected = selectedBarber?.id === barber.id;
+                                    return (
+                                        <TouchableOpacity
+                                            key={barber.id}
+                                            style={[styles.modalBarberItem, isSelected && styles.modalBarberItemSelected]}
+                                            onPress={() => handleBarberSelect(barber)}
+                                        >
+                                            <Image
+                                                source={{ uri: barber.avatar || 'https://i.pravatar.cc/150' }}
+                                                style={styles.modalBarberAvatar}
+                                            />
+                                            <View style={styles.modalBarberInfo}>
+                                                <Text style={styles.modalBarberName}>{barber.name}</Text>
+                                                <Text style={styles.modalBarberSpecialty}>{barber.specialty || 'Stylist'}</Text>
+                                                <View style={styles.modalBarberRating}>
+                                                    <Icon name="star" size={12} color={COLORS.primary} />
+                                                    <Text style={styles.modalBarberRatingText}>{barber.rating}</Text>
+                                                    <Text style={styles.modalBarberReviews}> • {barber.totalReviews || 0} đánh giá</Text>
+                                                </View>
+                                            </View>
+                                            {isSelected && (
+                                                <Icon name="checkmark-circle" size={24} color={COLORS.primary} />
+                                            )}
+                                        </TouchableOpacity>
+                                    );
+                                })}
+                            </ScrollView>
+                        </View>
+                    </View>
+                </Modal>
+            </View>
         </KeyboardAvoidingView>
     );
 };

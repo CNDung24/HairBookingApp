@@ -1,6 +1,7 @@
 import React from 'react';
-import { View, Text, Image, TouchableOpacity, StyleSheet, Platform } from 'react-native';
-import { COLORS, RADIUS, SPACING, SHADOW } from '../theme';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { Image as ExpoImage } from 'expo-image';
+import { COLORS, RADIUS, SPACING, SHADOWS } from '../theme';
 import { Ionicons as Icon } from '@expo/vector-icons';
 
 const isShopOpen = (openingTime, closingTime) => {
@@ -37,10 +38,11 @@ export const ShopCard = ({ shop, onPress }) => {
         >
             {/* --- IMAGE SECTION --- */}
             <View style={styles.imageContainer}>
-                <Image
+                <ExpoImage
                     source={{ uri: shop.image || 'https://via.placeholder.com/400x200' }}
                     style={styles.image}
-                    resizeMode="cover"
+                    contentFit="cover"
+                    transition={300}
                 />
 
                 {/* Badge: Rating (Góc phải trên) */}
@@ -87,13 +89,12 @@ const styles = StyleSheet.create({
     card: {
         backgroundColor: COLORS.surface,
         borderRadius: RADIUS.l,
-        marginBottom: SPACING.m + 4,
-        ...SHADOW,
-        borderWidth: 1,
-        borderColor: COLORS.border || '#F3F4F6',
+        marginBottom: SPACING.l,
+        ...SHADOWS?.medium, // Use theme shadows if available
+        // Remove border for more modern look
     },
     imageContainer: {
-        height: 180,
+        height: 200, // Slightly taller
         width: '100%',
         borderTopLeftRadius: RADIUS.l,
         borderTopRightRadius: RADIUS.l,
